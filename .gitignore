@@ -1,0 +1,30 @@
+# Python Virtual Environment
+venv/
+env/
+ENV/
+.venv/
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyc
+
+# Environment variables & Private API keys
+.env
+
+# Audit Logs & Telemetry
+audit_logs.jsonl
+
+# IDE Settings
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS generated files
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+.DS_Store

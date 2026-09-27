@@ -1,0 +1,15 @@
+fastapi
+uvicorn[standard]
+pydantic
+langchain
+langchain-community
+langchain-core
+langchain-ollama
+langchain-groq
+langchain-google-genai
+SQLAlchemy
+PyMySQL
+python-dotenv
+httpx
+streamlit
+pandas

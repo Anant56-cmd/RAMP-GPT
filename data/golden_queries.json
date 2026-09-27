@@ -1,0 +1,98 @@
+[
+  {
+    "query": "What is the total revenue generated from service and repairs?",
+    "sql": "SELECT COALESCE(SUM(CAST(d.amount AS DECIMAL(10,2)) * CAST(d.quantity AS DECIMAL(10,2))), 0) AS total_revenue FROM vehicle_service_details d;"
+  },
+  {
+    "query": "How much was spent by John Doe?",
+    "sql": "SELECT COALESCE(SUM(s.total_amt), 0) AS total_spent FROM vehicle_service_summary s INNER JOIN customer_vehicle_info c ON s.customer_id = c.customer_id WHERE REPLACE(LOWER(c.customer_name), ' ', '') LIKE '%johndoe%';"
+  },
+  {
+    "query": "Show me the average service cost for Audi A3.",
+    "sql": "SELECT COALESCE(AVG(s.total_amt), 0) AS average_service_cost FROM vehicle_service_summary s INNER JOIN customer_vehicle_info c ON s.customer_id = c.customer_id WHERE c.vehicle_type = 'Audi-A3-2.0 TSI';"
+  },
+  {
+    "query": "What is the average service cost for Audi?",
+    "sql": "SELECT COALESCE(AVG(s.total_amt), 0) AS average_service_cost FROM vehicle_service_summary s INNER JOIN customer_vehicle_info c ON s.customer_id = c.customer_id WHERE c.vehicle_type = 'Audi-A3-2.0 TSI';"
+  },
+  {
+    "query": "Compare spare parts revenue vs labour revenue.",
+    "sql": "SELECT COALESCE(SUM(CASE WHEN d.service_type_cd = 'PR' THEN CAST(d.amount AS DECIMAL(10,2)) * CAST(d.quantity AS DECIMAL(10,2)) ELSE 0 END), 0) AS parts_revenue, COALESCE(SUM(CASE WHEN d.service_type_cd = 'S' THEN CAST(d.amount AS DECIMAL(10,2)) * CAST(d.quantity AS DECIMAL(10,2)) ELSE 0 END), 0) AS labour_revenue FROM vehicle_service_details d;"
+  },
+  {
+    "query": "List all vehicles that have driven more than 1 lakh kilometers.",
+    "sql": "SELECT DISTINCT c.customer_vehicle_number, s.kilometer_driven FROM vehicle_service_summary s INNER JOIN customer_vehicle_info c ON s.customer_id = c.customer_id WHERE CAST(s.kilometer_driven AS UNSIGNED) > 100000;"
+  },
+  {
+    "query": "What is the total amount for services that had a brakes complaint?",
+    "sql": "SELECT COALESCE(SUM(CAST(d.amount AS DECIMAL(10,2))), 0) AS total_amount FROM vehicle_service_details d INNER JOIN job_card_details j ON d.vehicle_svc_id = j.vehicle_svc_id WHERE j.problem_desc LIKE \"%brakes%\";"
+  },
+  {
+    "query": "What is the total service amount for Volkswagen Virtus?",
+    "sql": "SELECT COALESCE(SUM(s.total_amt), 0) AS total_spent FROM vehicle_service_summary s INNER JOIN customer_vehicle_info c ON s.customer_id = c.customer_id WHERE c.vehicle_type = 'Volkswagen-VIRTUS-TOPLINE TSI';"
+  },
+  {
+    "query": "How much total money was spent servicing Mahindra Thar?",
+    "sql": "SELECT COALESCE(SUM(s.total_amt), 0) AS total_spent FROM vehicle_service_summary s INNER JOIN customer_vehicle_info c ON s.customer_id = c.customer_id WHERE c.vehicle_type = 'Mahindra-Thar-LX HARDTOP';"
+  },
+  {
+    "query": "What is the total cost incurred on Mahindra Scorpio?",
+    "sql": "SELECT COALESCE(SUM(s.total_amt), 0) AS total_spent FROM vehicle_service_summary s INNER JOIN customer_vehicle_info c ON s.customer_id = c.customer_id WHERE c.vehicle_type = 'Mahindra-Scorpio-1.9 S4';"
+  },
+  {
+    "query": "Which vehicles had an engine complaint and what was the total billing amount for that service?",
+    "sql": "SELECT DISTINCT c.customer_vehicle_number, c.vehicle_type, s.total_amt FROM customer_vehicle_info c INNER JOIN job_card_details j ON c.customer_id = j.customer_id INNER JOIN vehicle_service_summary s ON j.vehicle_svc_id = s.vehicle_svc_id AND j.customer_id = s.customer_id WHERE j.problem_desc LIKE '%engine%';"
+  },
+  {
+    "query": "What was the total parts cost billed for services supervised by Supervisor X?",
+    "sql": "SELECT COALESCE(SUM(CAST(d.amount AS DECIMAL(10,2)) * CAST(d.quantity AS DECIMAL(10,2))), 0) AS total_parts_cost FROM vehicle_service_details d INNER JOIN vehicle_service_summary s ON d.vehicle_svc_id = s.vehicle_svc_id AND d.customer_id = s.customer_id WHERE s.supervisor_name = 'Supervisor X' AND d.service_type_cd = 'PR';"
+  },
+  {
+    "query": "What is the total revenue collected from services that reported an AC cooling issue?",
+    "sql": "SELECT COALESCE(SUM(s.total_amt), 0) AS total_revenue FROM vehicle_service_summary s WHERE s.vehicle_svc_id IN (SELECT j.vehicle_svc_id FROM job_card_details j WHERE j.problem_desc LIKE '%AC COOLING%');"
+  },
+  {
+    "query": "Which vehicle model generated the highest labour service revenue?",
+    "sql": "SELECT c.vehicle_type, COALESCE(SUM(CAST(d.amount AS DECIMAL(10,2)) * CAST(d.quantity AS DECIMAL(10,2))), 0) AS labour_revenue FROM vehicle_service_details d INNER JOIN customer_vehicle_info c ON d.customer_id = c.customer_id WHERE d.service_type_cd = 'S' GROUP BY c.vehicle_type ORDER BY labour_revenue DESC LIMIT 1;"
+  },
+  {
+    "query": "List the customer names, vehicle types, and supervisor names for Detailed bill services.",
+    "sql": "SELECT c.customer_name, c.vehicle_type, s.supervisor_name, s.bill_type, s.total_amt FROM customer_vehicle_info c INNER JOIN vehicle_service_summary s ON c.customer_id = s.customer_id WHERE s.bill_type = 'Detailed';"
+  },
+  {
+    "query": "Which technicians work in the same workshop as Supervisor 1?",
+    "sql": "SELECT CONCAT(e.first_name, ' ', e.last_name) AS technician_name FROM employee_info e INNER JOIN workshop_info w ON e.workshop_id = w.workshop_id WHERE e.designation = 'Technician' AND e.workshop_id = (SELECT e2.workshop_id FROM employee_info e2 WHERE CONCAT(e2.first_name, ' ', e2.last_name) LIKE '%Supervisor 1%' LIMIT 1);"
+  },
+  {
+    "query": "For vehicles that had a water wash complaint, show the vehicle number, total invoice amount, and labour service description.",
+    "sql": "SELECT DISTINCT c.customer_vehicle_number, s.total_amt, d.service_desc FROM customer_vehicle_info c INNER JOIN job_card_details j ON c.customer_id = j.customer_id INNER JOIN vehicle_service_summary s ON j.vehicle_svc_id = s.vehicle_svc_id AND j.customer_id = s.customer_id INNER JOIN vehicle_service_details d ON s.vehicle_svc_id = d.vehicle_svc_id AND s.customer_id = d.customer_id WHERE j.problem_desc LIKE '%water wash%' AND d.service_type_cd = 'S' LIMIT 50;"
+  },
+  {
+    "query": "How many customers are registered in Hyderabad?",
+    "sql": "SELECT COUNT(*) AS customer_count FROM customer_vehicle_info c WHERE c.location_name = 'Hyderabad' OR c.city = 'Hyderabad';"
+  },
+  {
+    "query": "What is the average service cost for Audi and Volkswagen Virtus?",
+    "sql": "SELECT c.vehicle_type, COALESCE(AVG(s.total_amt), 0) AS average_service_cost FROM vehicle_service_summary s INNER JOIN customer_vehicle_info c ON s.customer_id = c.customer_id WHERE c.vehicle_type IN ('Audi-A3-2.0 TSI', 'Volkswagen-VIRTUS-TOPLINE TSI') GROUP BY c.vehicle_type;"
+  },
+  {
+    "query": "compare the average service cost for Audi and Volkswagen",
+    "sql": "SELECT CASE WHEN c.vehicle_type LIKE '%Audi%' THEN 'Audi' WHEN c.vehicle_type LIKE '%Volkswagen%' THEN 'Volkswagen' END AS brand, COALESCE(AVG(s.total_amt), 0) AS average_service_cost FROM vehicle_service_summary s INNER JOIN customer_vehicle_info c ON s.customer_id = c.customer_id WHERE c.vehicle_type LIKE '%Audi%' OR c.vehicle_type LIKE '%Volkswagen%' GROUP BY brand;"
+  },
+  {
+    "query": "What is the average service cost for Toyota?",
+    "sql": "SELECT COALESCE(AVG(s.total_amt), 0) AS average_service_cost FROM vehicle_service_summary s INNER JOIN customer_vehicle_info c ON s.customer_id = c.customer_id WHERE c.vehicle_type LIKE '%Toyota%';"
+  },
+  {
+    "query": "compare the average service cost for Audi and Toyota",
+    "sql": "SELECT CASE WHEN c.vehicle_type LIKE '%Audi%' THEN 'Audi' WHEN c.vehicle_type LIKE '%Toyota%' THEN 'Toyota' END AS brand, COALESCE(AVG(s.total_amt), 0) AS average_service_cost FROM vehicle_service_summary s INNER JOIN customer_vehicle_info c ON s.customer_id = c.customer_id WHERE c.vehicle_type LIKE '%Audi%' OR c.vehicle_type LIKE '%Toyota%' GROUP BY brand;"
+  },
+  {
+    "query": "Tell me which spare parts is replaced the most number of times",
+    "sql": "SELECT d.service_desc, COUNT(*) AS replacement_count FROM vehicle_service_details d WHERE d.service_type_cd = 'PR' GROUP BY d.service_desc ORDER BY replacement_count DESC LIMIT 1;"
+  },
+  {
+    "query": "Which spare part is replaced the most number of times?",
+    "sql": "SELECT d.service_desc, COUNT(*) AS replacement_count FROM vehicle_service_details d WHERE d.service_type_cd = 'PR' GROUP BY d.service_desc ORDER BY replacement_count DESC LIMIT 1;"
+  }
+]
