@@ -16,6 +16,8 @@ if sys.platform == "win32":
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
 import uvicorn
 
 from app.api.routes import router
@@ -38,6 +40,19 @@ app.add_middleware(
 
 # Register modular API routes
 app.include_router(router)
+
+# Mount and serve HTML frontend
+FRONTEND_DIR = os.path.join(os.path.dirname(__file__), "frontend")
+if os.path.exists(FRONTEND_DIR):
+    app.mount("/static-frontend", StaticFiles(directory=FRONTEND_DIR), name="static-frontend")
+
+@app.get("/", include_in_schema=False)
+def serve_ui():
+    """Serves the primary RAMP-GPT interactive web analytics UI."""
+    index_file = os.path.join(FRONTEND_DIR, "index.html")
+    if os.path.exists(index_file):
+        return FileResponse(index_file)
+    return {"message": "RAMP-GPT NL2SQL API is operational"}
 
 # Re-exports for backward compatibility
 __all__ = [
