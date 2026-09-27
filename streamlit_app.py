@@ -85,17 +85,18 @@ db_online = st.session_state.system_status.get("db_connected", True)
 is_bright = (st.session_state.theme_mode == "bright")
 
 # Corporate SVG Logo Icon
-SVG_LOGO = """
-<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-  <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
-  <polyline points="2 17 12 22 22 17"></polyline>
-  <polyline points="2 12 12 17 22 12"></polyline>
-</svg>
-"""
+SVG_LOGO = (
+    '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">'
+    '<polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>'
+    '<polyline points="2 17 12 22 22 17"></polyline>'
+    '<polyline points="2 12 12 17 22 12"></polyline>'
+    '</svg>'
+)
 
 def render_html(html_str: str):
     """Safely render HTML without CommonMark 4-space indentation code-block conversions."""
-    st.markdown(textwrap.dedent(html_str).strip(), unsafe_allow_html=True)
+    clean_html = " ".join(line.strip() for line in html_str.splitlines() if line.strip())
+    st.markdown(clean_html, unsafe_allow_html=True)
 
 # ---------------------------------------------------------
 # Design System & Responsive CSS Styling
