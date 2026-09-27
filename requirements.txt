@@ -11,3 +11,5 @@ SQLAlchemy
 PyMySQL
 python-dotenv
 httpx
+streamlit
+pandas
