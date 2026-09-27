@@ -531,16 +531,22 @@ if is_bright:
             box-shadow: 0 4px 12px rgba(220, 38, 38, 0.12) !important;
         }
 
-        /* Fixed Bottom Command Center Dock */
+        /* Centralized Bottom Command Center Dock */
+        div[data-testid="stBottom"], div[data-testid="stBottom"] > div {
+            background: transparent !important;
+            border-top: none !important;
+            box-shadow: none !important;
+        }
+        div[data-testid="stBottom"] > div {
+            max-width: 980px !important;
+            margin: 0 auto !important;
+            padding-bottom: 24px !important;
+        }
         div[data-testid="stChatInput"] {
-            position: fixed !important;
-            bottom: 24px !important;
-            left: 50% !important;
-            transform: translateX(-50%) !important;
             width: 100% !important;
-            max-width: 920px !important;
-            z-index: 9999 !important;
-            padding: 0 16px !important;
+            max-width: 980px !important;
+            margin: 0 auto !important;
+            padding: 0 4px !important;
         }
         div[data-testid="stChatInput"] > div {
             background: rgba(255, 255, 255, 0.98) !important;
@@ -768,7 +774,9 @@ else:
             align-items: flex-start !important;
         }
 
-        div[data-testid="stChatInput"] { position: fixed !important; bottom: 24px !important; left: 50% !important; transform: translateX(-50%) !important; width: 100% !important; max-width: 920px !important; z-index: 9999 !important; padding: 0 16px !important; }
+        div[data-testid="stBottom"], div[data-testid="stBottom"] > div { background: transparent !important; border-top: none !important; box-shadow: none !important; }
+        div[data-testid="stBottom"] > div { max-width: 980px !important; margin: 0 auto !important; padding-bottom: 24px !important; }
+        div[data-testid="stChatInput"] { width: 100% !important; max-width: 980px !important; margin: 0 auto !important; padding: 0 4px !important; }
         div[data-testid="stChatInput"] > div { background: rgba(17, 24, 39, 0.95) !important; border: 1.5px solid rgba(56, 189, 248, 0.35) !important; border-radius: 24px !important; backdrop-filter: blur(28px) !important; box-shadow: 0 16px 50px rgba(0, 0, 0, 0.65), 0 0 20px rgba(56, 189, 248, 0.12) !important; padding: 6px 14px !important; }
         div[data-testid="stChatInput"] textarea { color: #FFF !important; font-size: 14.5px !important; }
         div[data-testid="stChatInput"] button { background: #0284C7 !important; color: #FFF !important; border-radius: 14px !important; width: 38px !important; height: 38px !important; }
