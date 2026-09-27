@@ -823,25 +823,11 @@ with st.sidebar:
             {SVG_LOGO}
         </div>
         <div>
-            <div style="font-weight: 800; font-size: 16px; letter-spacing: -0.01em; color: {'#0F172A' if is_bright else '#F8FAFC'};">RAMP-GPT</div>
+            <div style="font-weight: 800; font-size: 16px; letter-spacing: -0.01em; color: #0F172A;">RAMP-GPT</div>
             <div style="font-size: 11px; color: #64748B; font-weight: 600;">Enterprise Intelligence v2.0</div>
         </div>
     </div>
     """)
-
-    # Theme Switcher
-    render_html('<div class="sidebar-card"><div class="sidebar-card-title">🎨 Theme Appearance</div>')
-    selected_theme = st.radio(
-        "Theme Palette",
-        options=["☀️ Crisp Tech Slate (Light)", "🌌 Deep Cyber Midnight (Dark)"],
-        index=0 if is_bright else 1,
-        label_visibility="collapsed"
-    )
-    new_mode = "bright" if "Light" in selected_theme or "Slate" in selected_theme else "dark"
-    if new_mode != st.session_state.theme_mode:
-        st.session_state.theme_mode = new_mode
-        st.rerun()
-    render_html('</div>')
 
     # Database Status Card
     render_html(f"""
