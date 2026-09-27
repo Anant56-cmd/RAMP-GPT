@@ -1045,7 +1045,7 @@ if len(st.session_state.messages) == 0:
     render_html("""
     <div class="hero-container">
         <div class="hero-tag">✦ Enterprise Text-to-SQL Intelligence</div>
-        <div class="hero-title">Smart Workshop Analytics, in Plain English.</div>
+        <div class="hero-title">Smart Workshop Analytics</div>
         <div class="hero-description">
             Translate conversational operational questions into multi-table MySQL statements with sub-second retrieval, 
             10-layer self-healing validation, zero-bloat semantic caching, and dynamic visualizations.
