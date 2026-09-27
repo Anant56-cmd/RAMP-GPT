@@ -1,6 +1,6 @@
 """
 RAMP-GPT — Enterprise Autonomous Garage Intelligence Dashboard.
-Features ultra-modern corporate branding, radiant colorful backdrop,
+Features ultra-modern corporate branding, cohesive enterprise color palette,
 floating command-center chatbox, live Chart.js visualizations,
 interactive data tables with 1-click CSV export, and autonomous caching.
 """
@@ -10,6 +10,7 @@ import sys
 import time
 import json
 import base64
+import textwrap
 import pandas as pd
 import streamlit as st
 import streamlit.components.v1 as components
@@ -92,11 +93,15 @@ SVG_LOGO = """
 </svg>
 """
 
+def render_html(html_str: str):
+    """Safely render HTML without CommonMark 4-space indentation code-block conversions."""
+    st.markdown(textwrap.dedent(html_str).strip(), unsafe_allow_html=True)
+
 # ---------------------------------------------------------
 # Design System & Responsive CSS Styling
 # ---------------------------------------------------------
 if is_bright:
-    # 🌈 RADIANT BRIGHT & COLORFUL THEME (DEFAULT)
+    # 🌈 REFINED TECH-SLATE & ELECTRIC INDIGO (BRIGHT THEME)
     st.markdown("""
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
@@ -108,7 +113,11 @@ if is_bright:
         }
 
         .stApp {
-            background: linear-gradient(135deg, #F8FAFC 0%, #EEF2FF 20%, #F5F3FF 45%, #FDF2F8 70%, #ECFEFF 100%) !important;
+            background-color: #F8FAFC !important;
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.08) 0px, transparent 50%),
+                radial-gradient(at 100% 0%, rgba(14, 165, 233, 0.07) 0px, transparent 50%),
+                radial-gradient(at 50% 100%, rgba(241, 245, 249, 0.85) 0px, transparent 50%) !important;
             color: #0F172A !important;
             overflow-x: hidden !important;
         }
@@ -120,7 +129,7 @@ if is_bright:
             margin: 0 auto !important;
         }
 
-        /* Ambient Dynamic Color Blobs */
+        /* Subtle Ambient Glow Mesh */
         .ambient-mesh {
             position: fixed;
             top: 0; left: 0; width: 100vw; height: 100vh;
@@ -131,19 +140,18 @@ if is_bright:
         .glow-orb {
             position: absolute;
             border-radius: 50%;
-            filter: blur(120px);
-            opacity: 0.52;
-            animation: orb-drift 22s infinite alternate ease-in-out;
+            filter: blur(140px);
+            opacity: 0.18;
+            animation: orb-drift 24s infinite alternate ease-in-out;
         }
-        .orb-1 { top: -15%; left: -10%; width: 50vw; height: 50vw; background: #818CF8; animation-delay: 0s; }
-        .orb-2 { top: 25%; right: -15%; width: 55vw; height: 55vw; background: #F472B6; animation-delay: -6s; }
-        .orb-3 { bottom: -20%; left: 15%; width: 50vw; height: 50vw; background: #38BDF8; animation-delay: -12s; }
-        .orb-4 { top: 60%; left: 55%; width: 35vw; height: 35vw; background: #FBBF24; opacity: 0.35; animation-delay: -18s; }
+        .orb-1 { top: -10%; left: -5%; width: 45vw; height: 45vw; background: #6366F1; animation-delay: 0s; }
+        .orb-2 { top: 30%; right: -10%; width: 40vw; height: 40vw; background: #38BDF8; animation-delay: -8s; }
+        .orb-3 { bottom: -15%; left: 20%; width: 45vw; height: 45vw; background: #818CF8; animation-delay: -16s; }
 
         @keyframes orb-drift {
-            0% { transform: translate(0, 0) scale(1) rotate(0deg); }
-            50% { transform: translate(45px, 35px) scale(1.06) rotate(8deg); }
-            100% { transform: translate(-35px, -30px) scale(0.95) rotate(-8deg); }
+            0% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(30px, 20px) scale(1.04); }
+            100% { transform: translate(-25px, -20px) scale(0.96); }
         }
 
         /* Floating Navbar */
@@ -152,13 +160,13 @@ if is_bright:
             align-items: center;
             justify-content: space-between;
             padding: 14px 24px;
-            background: rgba(255, 255, 255, 0.88);
-            border: 1px solid rgba(255, 255, 255, 0.95);
+            background: rgba(255, 255, 255, 0.94);
+            border: 1px solid #E2E8F0;
             border-radius: 20px;
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
             margin-bottom: 24px;
-            box-shadow: 0 10px 30px rgba(99, 102, 241, 0.08), 0 1px 3px rgba(0, 0, 0, 0.04);
+            box-shadow: 0 4px 20px rgba(15, 23, 42, 0.04), 0 1px 2px rgba(0, 0, 0, 0.02);
         }
         .nav-left {
             display: flex;
@@ -169,27 +177,25 @@ if is_bright:
             width: 42px;
             height: 42px;
             border-radius: 12px;
-            background: linear-gradient(135deg, #4F46E5 0%, #7C3AED 50%, #EC4899 100%);
+            background: linear-gradient(135deg, #4338CA 0%, #4F46E5 100%);
             display: flex;
             align-items: center;
             justify-content: center;
             color: #FFFFFF;
-            box-shadow: 0 4px 16px rgba(79, 70, 229, 0.35);
+            box-shadow: 0 4px 14px rgba(79, 70, 229, 0.28);
         }
         .brand-heading {
             font-size: 18px;
             font-weight: 800;
             letter-spacing: -0.02em;
-            background: linear-gradient(135deg, #1E1B4B 0%, #4338CA 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            color: #0F172A;
             line-height: 1.1;
         }
         .brand-sub {
-            font-size: 11px;
+            font-size: 11.5px;
             font-weight: 600;
             color: #64748B;
-            letter-spacing: 0.02em;
+            letter-spacing: 0.01em;
         }
         .nav-right {
             display: flex;
@@ -210,31 +216,29 @@ if is_bright:
             background: #ECFDF5;
             color: #059669;
             border: 1px solid #A7F3D0;
-            box-shadow: 0 2px 6px rgba(16, 185, 129, 0.12);
         }
         .badge-pulse {
             width: 8px;
             height: 8px;
             border-radius: 50%;
             background-color: #10B981;
-            box-shadow: 0 0 10px #10B981;
+            box-shadow: 0 0 8px #10B981;
             animation: pulse-dot 2s infinite;
         }
         @keyframes pulse-dot {
             0%, 100% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.3; transform: scale(0.85); }
+            50% { opacity: 0.35; transform: scale(0.85); }
         }
         .badge-engine {
-            background: #FFFBEB;
-            color: #D97706;
-            border: 1px solid #FDE68A;
-            box-shadow: 0 2px 6px rgba(245, 158, 11, 0.12);
+            background: #EEF2FF;
+            color: #4338CA;
+            border: 1px solid #C7D2FE;
         }
 
         /* Hero Welcome Section */
         .hero-container {
             text-align: center;
-            padding: 34px 20px 20px;
+            padding: 30px 20px 18px;
             margin-bottom: 20px;
         }
         .hero-tag {
@@ -242,24 +246,23 @@ if is_bright:
             align-items: center;
             gap: 6px;
             padding: 5px 16px;
-            background: linear-gradient(135deg, #EEF2FF 0%, #FCE7F3 100%);
+            background: #EEF2FF;
             border: 1px solid #C7D2FE;
             border-radius: 9999px;
-            color: #4F46E5;
+            color: #4338CA;
             font-size: 11.5px;
             font-weight: 800;
             letter-spacing: 0.06em;
             text-transform: uppercase;
             margin-bottom: 14px;
-            box-shadow: 0 2px 8px rgba(99, 102, 241, 0.12);
         }
         .hero-title {
             font-size: 36px;
             font-weight: 800;
             letter-spacing: -0.03em;
             line-height: 1.2;
-            margin-bottom: 10px;
-            background: linear-gradient(135deg, #0F172A 15%, #4338CA 55%, #DB2777 95%);
+            margin-bottom: 12px;
+            background: linear-gradient(135deg, #0F172A 30%, #3730A3 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
@@ -285,13 +288,13 @@ if is_bright:
             align-items: center;
             gap: 6px;
             padding: 5px 14px;
-            background: rgba(255, 255, 255, 0.75);
-            border: 1px solid rgba(226, 232, 240, 0.9);
+            background: #FFFFFF;
+            border: 1px solid #E2E8F0;
             border-radius: 9999px;
             font-size: 11.5px;
             font-weight: 700;
-            color: #475569;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+            color: #334155;
+            box-shadow: 0 1px 4px rgba(15, 23, 42, 0.04);
         }
 
         /* User Message Bubble */
@@ -301,32 +304,31 @@ if is_bright:
             margin-bottom: 20px;
         }
         .user-bubble-box {
-            background: linear-gradient(135deg, #4F46E5 0%, #6366F1 50%, #8B5CF6 100%);
-            border: 1px solid rgba(255, 255, 255, 0.3);
+            background: linear-gradient(135deg, #3730A3 0%, #4F46E5 100%);
+            border: 1px solid rgba(255, 255, 255, 0.2);
             border-radius: 20px 20px 4px 20px;
             padding: 14px 22px;
             color: #FFFFFF;
-            font-size: 15px;
+            font-size: 14.5px;
             font-weight: 600;
             max-width: 82%;
-            box-shadow: 0 8px 24px rgba(79, 70, 229, 0.3);
+            box-shadow: 0 6px 20px rgba(79, 70, 229, 0.22);
             line-height: 1.5;
         }
 
         /* Assistant Card */
         .assistant-wrapper {
-            background: rgba(255, 255, 255, 0.94);
-            border: 1px solid rgba(226, 232, 240, 0.95);
-            border-radius: 24px;
+            background: #FFFFFF;
+            border: 1px solid #E2E8F0;
+            border-radius: 22px;
             padding: 24px 28px;
             margin-bottom: 24px;
-            backdrop-filter: blur(20px);
-            box-shadow: 0 12px 36px rgba(99, 102, 241, 0.08), 0 2px 4px rgba(0, 0, 0, 0.02);
+            box-shadow: 0 8px 24px rgba(15, 23, 42, 0.05), 0 1px 2px rgba(0, 0, 0, 0.02);
             transition: all 0.2s ease;
         }
         .assistant-wrapper:hover {
-            box-shadow: 0 16px 44px rgba(99, 102, 241, 0.14);
-            border-color: #C7D2FE;
+            box-shadow: 0 12px 32px rgba(15, 23, 42, 0.08);
+            border-color: #CBD5E1;
         }
         .asst-header {
             display: flex;
@@ -343,20 +345,20 @@ if is_bright:
             width: 34px;
             height: 34px;
             border-radius: 10px;
-            background: linear-gradient(135deg, #4F46E5, #EC4899);
+            background: linear-gradient(135deg, #4338CA, #6366F1);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 15px;
+            font-size: 14px;
             color: #FFF;
-            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+            box-shadow: 0 3px 10px rgba(79, 70, 229, 0.25);
         }
         .asst-title {
-            font-size: 12.5px;
+            font-size: 12px;
             font-weight: 800;
             letter-spacing: 0.06em;
             text-transform: uppercase;
-            color: #4F46E5;
+            color: #4338CA;
         }
         .asst-telemetry-row {
             display: flex;
@@ -383,11 +385,149 @@ if is_bright:
             font-family: 'JetBrains Mono', monospace;
         }
         .asst-answer-text {
-            font-size: 15.5px;
+            font-size: 15px;
             color: #0F172A;
             line-height: 1.65;
             margin-bottom: 18px;
             font-weight: 500;
+        }
+
+        /* ----------------------------------------------- */
+        /* STYLED STREAMLIT BUTTONS & HERO PROMPT CARDS    */
+        /* ----------------------------------------------- */
+        .stButton > button, .stDownloadButton > button {
+            background: #FFFFFF !important;
+            color: #0F172A !important;
+            border: 1.5px solid #E2E8F0 !important;
+            border-radius: 14px !important;
+            box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04) !important;
+            font-family: 'Plus Jakarta Sans', sans-serif !important;
+            font-weight: 600 !important;
+            font-size: 13px !important;
+            padding: 10px 16px !important;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+            text-align: left !important;
+            white-space: normal !important;
+            word-wrap: break-word !important;
+        }
+
+        .stButton > button:hover, .stDownloadButton > button:hover {
+            border-color: #6366F1 !important;
+            box-shadow: 0 8px 24px rgba(99, 102, 241, 0.12) !important;
+            transform: translateY(-2px) !important;
+            background: #FFFFFF !important;
+            color: #4338CA !important;
+        }
+
+        .stButton > button:active, .stDownloadButton > button:active {
+            transform: translateY(0) !important;
+        }
+
+        /* Multi-line Prompt Cards typography */
+        .stButton > button p {
+            color: #475569 !important;
+            font-size: 12px !important;
+            line-height: 1.45 !important;
+            margin: 0 !important;
+        }
+
+        .stButton > button strong {
+            color: #0F172A !important;
+            font-size: 13.5px !important;
+            font-weight: 700 !important;
+            display: block !important;
+            margin-bottom: 2px !important;
+        }
+
+        .stButton > button em {
+            color: #4F46E5 !important;
+            font-size: 10px !important;
+            font-weight: 800 !important;
+            letter-spacing: 0.06em !important;
+            text-transform: uppercase !important;
+            font-style: normal !important;
+            display: block !important;
+            margin-bottom: 6px !important;
+        }
+
+        /* Hero Prompt Cards Container */
+        .hero-card-col .stButton > button {
+            min-height: 124px !important;
+            padding: 16px 14px !important;
+            display: flex !important;
+            flex-direction: column !important;
+            justify-content: flex-start !important;
+            align-items: flex-start !important;
+        }
+
+        /* Sidebar Button & Radio Controls */
+        section[data-testid="stSidebar"] {
+            background: #FFFFFF !important;
+            border-right: 1px solid #E2E8F0 !important;
+        }
+        section[data-testid="stSidebar"] .block-container {
+            padding-top: 1.8rem !important;
+            padding-bottom: 2rem !important;
+        }
+        .sidebar-card {
+            background: #F8FAFC;
+            border: 1px solid #E2E8F0;
+            border-radius: 14px;
+            padding: 14px 16px;
+            margin-bottom: 14px;
+            box-shadow: 0 1px 3px rgba(15, 23, 42, 0.03);
+        }
+        .sidebar-card-title {
+            font-size: 11px;
+            font-weight: 800;
+            color: #4338CA;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+        .sidebar-stat-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12.5px;
+            color: #475569;
+            padding: 4px 0;
+            font-weight: 500;
+        }
+        .stat-val-highlight {
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 700;
+            color: #0F172A;
+        }
+
+        /* Sidebar Radio Button explicit high-contrast text */
+        div[data-testid="stRadio"] label, div[data-testid="stRadio"] label p {
+            color: #1E293B !important;
+            font-size: 13px !important;
+            font-weight: 600 !important;
+            cursor: pointer !important;
+            margin: 0 !important;
+        }
+        div[data-testid="stRadio"] label:hover, div[data-testid="stRadio"] label:hover p {
+            color: #4F46E5 !important;
+        }
+
+        /* Sidebar Clear button */
+        section[data-testid="stSidebar"] .stButton > button {
+            text-align: center !important;
+            justify-content: center !important;
+            display: flex !important;
+            align-items: center !important;
+            font-size: 12.5px !important;
+            padding: 8px 14px !important;
+            background: #F8FAFC !important;
+            border: 1px solid #E2E8F0 !important;
+        }
+        section[data-testid="stSidebar"] .stButton > button:hover {
+            background: #FEE2E2 !important;
+            border-color: #FCA5A5 !important;
+            color: #DC2626 !important;
+            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.12) !important;
         }
 
         /* Fixed Bottom Command Center Dock */
@@ -402,23 +542,23 @@ if is_bright:
             padding: 0 16px !important;
         }
         div[data-testid="stChatInput"] > div {
-            background: rgba(255, 255, 255, 0.95) !important;
-            border: 1.5px solid rgba(99, 102, 241, 0.28) !important;
-            border-radius: 26px !important;
-            backdrop-filter: blur(28px) !important;
-            -webkit-backdrop-filter: blur(28px) !important;
-            box-shadow: 0 16px 50px rgba(99, 102, 241, 0.18), 0 2px 8px rgba(0, 0, 0, 0.04) !important;
+            background: rgba(255, 255, 255, 0.98) !important;
+            border: 1.5px solid #CBD5E1 !important;
+            border-radius: 24px !important;
+            backdrop-filter: blur(20px) !important;
+            -webkit-backdrop-filter: blur(20px) !important;
+            box-shadow: 0 12px 36px rgba(15, 23, 42, 0.08), 0 2px 6px rgba(0, 0, 0, 0.03) !important;
             padding: 6px 14px !important;
-            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
         }
         div[data-testid="stChatInput"] > div:focus-within {
             border-color: #4F46E5 !important;
-            box-shadow: 0 18px 55px rgba(79, 70, 229, 0.28), 0 0 0 3px rgba(79, 70, 229, 0.12) !important;
+            box-shadow: 0 16px 44px rgba(79, 70, 229, 0.18), 0 0 0 3px rgba(79, 70, 229, 0.12) !important;
             transform: translateY(-2px) !important;
         }
         div[data-testid="stChatInput"] textarea {
             color: #0F172A !important;
-            font-size: 15px !important;
+            font-size: 14.5px !important;
             font-weight: 500 !important;
             line-height: 1.5 !important;
             padding: 8px 12px !important;
@@ -428,61 +568,21 @@ if is_bright:
             font-weight: 400 !important;
         }
         div[data-testid="stChatInput"] button {
-            background: linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%) !important;
+            background: #4F46E5 !important;
             color: #FFFFFF !important;
-            border-radius: 16px !important;
+            border-radius: 14px !important;
             border: none !important;
             width: 38px !important;
             height: 38px !important;
             display: flex !important;
             align-items: center !important;
             justify-content: center !important;
-            box-shadow: 0 4px 14px rgba(79, 70, 229, 0.4) !important;
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.35) !important;
             transition: all 0.2s ease !important;
         }
         div[data-testid="stChatInput"] button:hover {
-            transform: scale(1.08) !important;
-            box-shadow: 0 6px 20px rgba(79, 70, 229, 0.55) !important;
-        }
-
-        /* Sidebar Styling */
-        section[data-testid="stSidebar"] {
-            background: linear-gradient(180deg, #FFFFFF 0%, #F8FAFC 100%) !important;
-            border-right: 1px solid #E2E8F0 !important;
-        }
-        section[data-testid="stSidebar"] .block-container {
-            padding-top: 1.8rem !important;
-            padding-bottom: 2rem !important;
-        }
-        .sidebar-card {
-            background: #FFFFFF;
-            border: 1px solid #E2E8F0;
-            border-radius: 14px;
-            padding: 14px 16px;
-            margin-bottom: 14px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-        }
-        .sidebar-card-title {
-            font-size: 11px;
-            font-weight: 800;
-            color: #4F46E5;
-            letter-spacing: 0.06em;
-            text-transform: uppercase;
-            margin-bottom: 10px;
-        }
-        .sidebar-stat-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 12.5px;
-            color: #334155;
-            padding: 4px 0;
-            font-weight: 500;
-        }
-        .stat-val-highlight {
-            font-family: 'JetBrains Mono', monospace;
-            font-weight: 700;
-            color: #4338CA;
+            background: #4338CA !important;
+            transform: scale(1.05) !important;
         }
 
         /* Streamlit Tab Styling */
@@ -508,11 +608,10 @@ if is_bright:
         <div class="glow-orb orb-1"></div>
         <div class="glow-orb orb-2"></div>
         <div class="glow-orb orb-3"></div>
-        <div class="glow-orb orb-4"></div>
     </div>
     """, unsafe_allow_html=True)
 else:
-    # 🌌 VIVID CYBER AURORA THEME
+    # 🌌 DEEP CYBER MIDNIGHT THEME
     st.markdown("""
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
@@ -524,7 +623,11 @@ else:
         }
 
         .stApp {
-            background: linear-gradient(135deg, #0F172A 0%, #1E1B4B 35%, #2E1065 70%, #0F172A 100%) !important;
+            background-color: #090D16 !important;
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(2, 132, 199, 0.15) 0px, transparent 50%),
+                radial-gradient(at 100% 0%, rgba(124, 58, 237, 0.14) 0px, transparent 50%),
+                radial-gradient(at 50% 100%, rgba(15, 23, 42, 0.9) 0px, transparent 50%) !important;
             color: #F8FAFC !important;
             overflow-x: hidden !important;
         }
@@ -546,19 +649,18 @@ else:
         .glow-orb {
             position: absolute;
             border-radius: 50%;
-            filter: blur(130px);
-            opacity: 0.6;
+            filter: blur(140px);
+            opacity: 0.22;
             animation: orb-drift 24s infinite alternate ease-in-out;
         }
-        .orb-1 { top: -12%; left: -8%; width: 48vw; height: 48vw; background: #00F0FF; }
-        .orb-2 { top: 35%; right: -12%; width: 44vw; height: 44vw; background: #A855F7; }
-        .orb-3 { bottom: -15%; left: 20%; width: 42vw; height: 42vw; background: #EC4899; }
-        .orb-4 { top: 60%; left: 55%; width: 35vw; height: 35vw; background: #F59E0B; opacity: 0.35; }
+        .orb-1 { top: -10%; left: -5%; width: 45vw; height: 45vw; background: #0284C7; }
+        .orb-2 { top: 35%; right: -10%; width: 40vw; height: 40vw; background: #6366F1; }
+        .orb-3 { bottom: -15%; left: 20%; width: 45vw; height: 45vw; background: #7C3AED; }
 
         @keyframes orb-drift {
-            0% { transform: translate(0, 0) scale(1) rotate(0deg); }
-            50% { transform: translate(50px, 40px) scale(1.08) rotate(10deg); }
-            100% { transform: translate(-30px, -40px) scale(0.94) rotate(-10deg); }
+            0% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(30px, 20px) scale(1.04); }
+            100% { transform: translate(-25px, -20px) scale(0.96); }
         }
 
         .nav-card {
@@ -566,55 +668,137 @@ else:
             align-items: center;
             justify-content: space-between;
             padding: 14px 24px;
-            background: rgba(18, 24, 46, 0.75);
-            border: 1px solid rgba(255, 255, 255, 0.12);
+            background: rgba(17, 24, 39, 0.85);
+            border: 1px solid rgba(255, 255, 255, 0.08);
             border-radius: 20px;
             backdrop-filter: blur(20px);
             margin-bottom: 24px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
         }
         .brand-avatar {
             width: 42px; height: 42px; border-radius: 12px;
-            background: linear-gradient(135deg, #00F0FF, #7000FF, #EC4899);
+            background: linear-gradient(135deg, #0284C7, #6366F1);
             display: flex; align-items: center; justify-content: center; color: #FFF;
-            box-shadow: 0 0 20px rgba(0, 240, 255, 0.5);
+            box-shadow: 0 0 16px rgba(2, 132, 199, 0.4);
         }
         .brand-heading { font-size: 18px; font-weight: 800; color: #FFF; line-height: 1.1; }
         .brand-sub { font-size: 11px; color: #94A3B8; }
         .badge-pill { display: inline-flex; align-items: center; gap: 6px; padding: 5px 12px; border-radius: 9999px; font-size: 11px; font-weight: 700; }
         .badge-mysql { background: rgba(16, 185, 129, 0.15); color: #34D399; border: 1px solid rgba(16, 185, 129, 0.35); }
         .badge-pulse { width: 8px; height: 8px; border-radius: 50%; background-color: #34D399; box-shadow: 0 0 10px #34D399; animation: pulse-dot 2s infinite; }
-        .badge-engine { background: rgba(245, 158, 11, 0.15); color: #FBBF24; border: 1px solid rgba(245, 158, 11, 0.35); }
+        .badge-engine { background: rgba(99, 102, 241, 0.15); color: #A5B4FC; border: 1px solid rgba(99, 102, 241, 0.35); }
 
-        .hero-container { text-align: center; padding: 34px 20px 20px; margin-bottom: 20px; }
-        .hero-tag { display: inline-flex; padding: 4px 14px; background: rgba(0, 240, 255, 0.1); border: 1px solid rgba(0, 240, 255, 0.3); border-radius: 9999px; color: #38BDF8; font-size: 11px; font-weight: 700; text-transform: uppercase; margin-bottom: 14px; }
-        .hero-title { font-size: 36px; font-weight: 800; background: linear-gradient(135deg, #FFF 20%, #A5B4FC 60%, #F472B6 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .hero-container { text-align: center; padding: 30px 20px 18px; margin-bottom: 20px; }
+        .hero-tag { display: inline-flex; padding: 4px 14px; background: rgba(56, 189, 248, 0.12); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 9999px; color: #38BDF8; font-size: 11px; font-weight: 700; text-transform: uppercase; margin-bottom: 14px; }
+        .hero-title { font-size: 36px; font-weight: 800; background: linear-gradient(135deg, #FFF 30%, #93C5FD 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .hero-description { font-size: 14.5px; color: #CBD5E1; max-width: 620px; margin: 0 auto 24px; line-height: 1.6; }
 
         .feature-pills-row { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin-bottom: 28px; }
-        .feat-pill { display: inline-flex; align-items: center; gap: 6px; padding: 5px 14px; background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 9999px; font-size: 11.5px; font-weight: 700; color: #E2E8F0; }
+        .feat-pill { display: inline-flex; align-items: center; gap: 6px; padding: 5px 14px; background: rgba(255, 255, 255, 0.06); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 9999px; font-size: 11.5px; font-weight: 700; color: #E2E8F0; }
 
         .user-bubble-row { display: flex; justify-content: flex-end; margin-bottom: 20px; }
-        .user-bubble-box { background: linear-gradient(135deg, #1E293B, #0F172A); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 20px 20px 4px 20px; padding: 14px 22px; color: #FFF; font-size: 15px; font-weight: 600; max-width: 82%; }
+        .user-bubble-box { background: linear-gradient(135deg, #1E293B, #0F172A); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 20px 20px 4px 20px; padding: 14px 22px; color: #FFF; font-size: 14.5px; font-weight: 600; max-width: 82%; }
 
-        .assistant-wrapper { background: rgba(18, 24, 46, 0.88); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 24px; padding: 24px 28px; margin-bottom: 24px; backdrop-filter: blur(20px); }
+        .assistant-wrapper { background: rgba(17, 24, 39, 0.88); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 22px; padding: 24px 28px; margin-bottom: 24px; backdrop-filter: blur(20px); }
         .asst-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
-        .asst-glow-icon { width: 34px; height: 34px; border-radius: 10px; background: linear-gradient(135deg, #00F0FF, #EC4899); display: flex; align-items: center; justify-content: center; font-size: 15px; color: #FFF; }
-        .asst-title { font-size: 12.5px; font-weight: 800; color: #C084FC; text-transform: uppercase; }
+        .asst-glow-icon { width: 34px; height: 34px; border-radius: 10px; background: linear-gradient(135deg, #0284C7, #6366F1); display: flex; align-items: center; justify-content: center; font-size: 14px; color: #FFF; }
+        .asst-title { font-size: 12px; font-weight: 800; color: #38BDF8; text-transform: uppercase; }
         .cache-pill-hit { background: rgba(16, 185, 129, 0.2); color: #34D399; border: 1px solid rgba(16, 185, 129, 0.4); border-radius: 9999px; padding: 4px 11px; font-size: 11px; font-weight: 700; }
         .latency-pill { background: rgba(255, 255, 255, 0.08); color: #CBD5E1; border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 9999px; padding: 4px 11px; font-size: 11px; font-weight: 600; font-family: 'JetBrains Mono', monospace; }
-        .asst-answer-text { font-size: 15.5px; color: #F8FAFC; line-height: 1.65; margin-bottom: 18px; font-weight: 500; }
+        .asst-answer-text { font-size: 15px; color: #F8FAFC; line-height: 1.65; margin-bottom: 18px; font-weight: 500; }
+
+        /* Dark Mode Buttons */
+        .stButton > button, .stDownloadButton > button {
+            background: #111827 !important;
+            color: #F8FAFC !important;
+            border: 1.5px solid rgba(255, 255, 255, 0.12) !important;
+            border-radius: 14px !important;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3) !important;
+            font-family: 'Plus Jakarta Sans', sans-serif !important;
+            font-weight: 600 !important;
+            font-size: 13px !important;
+            padding: 10px 16px !important;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+            text-align: left !important;
+            white-space: normal !important;
+            word-wrap: break-word !important;
+        }
+
+        .stButton > button:hover, .stDownloadButton > button:hover {
+            border-color: #38BDF8 !important;
+            box-shadow: 0 8px 24px rgba(56, 189, 248, 0.18) !important;
+            transform: translateY(-2px) !important;
+            background: #111827 !important;
+            color: #38BDF8 !important;
+        }
+
+        .stButton > button p {
+            color: #94A3B8 !important;
+            font-size: 12px !important;
+            line-height: 1.45 !important;
+            margin: 0 !important;
+        }
+
+        .stButton > button strong {
+            color: #F8FAFC !important;
+            font-size: 13.5px !important;
+            font-weight: 700 !important;
+            display: block !important;
+            margin-bottom: 2px !important;
+        }
+
+        .stButton > button em {
+            color: #38BDF8 !important;
+            font-size: 10px !important;
+            font-weight: 800 !important;
+            letter-spacing: 0.06em !important;
+            text-transform: uppercase !important;
+            font-style: normal !important;
+            display: block !important;
+            margin-bottom: 6px !important;
+        }
+
+        .hero-card-col .stButton > button {
+            min-height: 124px !important;
+            padding: 16px 14px !important;
+            display: flex !important;
+            flex-direction: column !important;
+            justify-content: flex-start !important;
+            align-items: flex-start !important;
+        }
 
         div[data-testid="stChatInput"] { position: fixed !important; bottom: 24px !important; left: 50% !important; transform: translateX(-50%) !important; width: 100% !important; max-width: 920px !important; z-index: 9999 !important; padding: 0 16px !important; }
-        div[data-testid="stChatInput"] > div { background: rgba(18, 24, 46, 0.94) !important; border: 1.5px solid rgba(0, 240, 255, 0.35) !important; border-radius: 26px !important; backdrop-filter: blur(28px) !important; box-shadow: 0 16px 50px rgba(0, 0, 0, 0.65), 0 0 25px rgba(0, 240, 255, 0.15) !important; padding: 6px 14px !important; }
-        div[data-testid="stChatInput"] textarea { color: #FFF !important; font-size: 15px !important; }
-        div[data-testid="stChatInput"] button { background: linear-gradient(135deg, #00F0FF 0%, #7000FF 100%) !important; color: #070912 !important; border-radius: 16px !important; width: 38px !important; height: 38px !important; }
+        div[data-testid="stChatInput"] > div { background: rgba(17, 24, 39, 0.95) !important; border: 1.5px solid rgba(56, 189, 248, 0.35) !important; border-radius: 24px !important; backdrop-filter: blur(28px) !important; box-shadow: 0 16px 50px rgba(0, 0, 0, 0.65), 0 0 20px rgba(56, 189, 248, 0.12) !important; padding: 6px 14px !important; }
+        div[data-testid="stChatInput"] textarea { color: #FFF !important; font-size: 14.5px !important; }
+        div[data-testid="stChatInput"] button { background: #0284C7 !important; color: #FFF !important; border-radius: 14px !important; width: 38px !important; height: 38px !important; }
 
-        section[data-testid="stSidebar"] { background: #0A0F1D !important; border-right: 1px solid rgba(255, 255, 255, 0.08) !important; }
-        .sidebar-card { background: rgba(18, 24, 46, 0.8); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 14px; padding: 14px 16px; margin-bottom: 14px; }
+        section[data-testid="stSidebar"] { background: #0B0F19 !important; border-right: 1px solid rgba(255, 255, 255, 0.08) !important; }
+        .sidebar-card { background: rgba(17, 24, 39, 0.85); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 14px; padding: 14px 16px; margin-bottom: 14px; }
         .sidebar-card-title { font-size: 11px; font-weight: 800; color: #38BDF8; text-transform: uppercase; margin-bottom: 10px; }
-        .sidebar-stat-row { display: flex; justify-content: space-between; align-items: center; font-size: 12.5px; color: #CBD5E1; padding: 4px 0; }
-        .stat-val-highlight { font-family: 'JetBrains Mono', monospace; font-weight: 700; color: #38BDF8; }
+        .sidebar-stat-row { display: flex; justify-content: space-between; align-items: center; font-size: 12.5px; color: #94A3B8; padding: 4px 0; }
+        .stat-val-highlight { font-family: 'JetBrains Mono', monospace; font-weight: 700; color: #F8FAFC; }
+
+        div[data-testid="stRadio"] label, div[data-testid="stRadio"] label p {
+            color: #F1F5F9 !important;
+            font-size: 13px !important;
+            font-weight: 600 !important;
+            cursor: pointer !important;
+            margin: 0 !important;
+        }
+        div[data-testid="stRadio"] label:hover, div[data-testid="stRadio"] label:hover p {
+            color: #38BDF8 !important;
+        }
+
+        section[data-testid="stSidebar"] .stButton > button {
+            text-align: center !important;
+            justify-content: center !important;
+            display: flex !important;
+            align-items: center !important;
+            font-size: 12.5px !important;
+            padding: 8px 14px !important;
+            background: rgba(255, 255, 255, 0.05) !important;
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        }
 
         .stTabs [data-baseweb="tab-list"] { gap: 8px; border-bottom: 1px solid rgba(255, 255, 255, 0.1); margin-bottom: 14px; }
         .stTabs [data-baseweb="tab"] { font-weight: 700 !important; font-size: 12.5px !important; color: #94A3B8 !important; padding: 8px 16px !important; }
@@ -625,7 +809,6 @@ else:
         <div class="glow-orb orb-1"></div>
         <div class="glow-orb orb-2"></div>
         <div class="glow-orb orb-3"></div>
-        <div class="glow-orb orb-4"></div>
     </div>
     """, unsafe_allow_html=True)
 
@@ -633,34 +816,34 @@ else:
 # Sidebar: System Diagnostics & Theme Controls
 # ---------------------------------------------------------
 with st.sidebar:
-    st.markdown(f"""
+    render_html(f"""
     <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 20px;">
-        <div style="width: 36px; height: 36px; border-radius: 10px; background: linear-gradient(135deg, #4F46E5, #EC4899); display: flex; align-items: center; justify-content: center; color: #FFF;">
+        <div style="width: 36px; height: 36px; border-radius: 10px; background: linear-gradient(135deg, #4338CA, #4F46E5); display: flex; align-items: center; justify-content: center; color: #FFF;">
             {SVG_LOGO}
         </div>
         <div>
-            <div style="font-weight: 800; font-size: 16px; letter-spacing: -0.01em;">RAMP-GPT</div>
+            <div style="font-weight: 800; font-size: 16px; letter-spacing: -0.01em; color: {'#0F172A' if is_bright else '#F8FAFC'};">RAMP-GPT</div>
             <div style="font-size: 11px; color: #64748B; font-weight: 600;">Enterprise Intelligence v2.0</div>
         </div>
     </div>
-    """, unsafe_allow_html=True)
+    """)
 
     # Theme Switcher
-    st.markdown('<div class="sidebar-card"><div class="sidebar-card-title">🎨 Theme Appearance</div>', unsafe_allow_html=True)
+    render_html('<div class="sidebar-card"><div class="sidebar-card-title">🎨 Theme Appearance</div>')
     selected_theme = st.radio(
         "Theme Palette",
-        options=["🌈 Radiant Bright (Colorful)", "🌌 Vivid Cyber Aurora"],
+        options=["☀️ Crisp Tech Slate (Light)", "🌌 Deep Cyber Midnight (Dark)"],
         index=0 if is_bright else 1,
         label_visibility="collapsed"
     )
-    new_mode = "bright" if "Bright" in selected_theme else "dark"
+    new_mode = "bright" if "Light" in selected_theme or "Slate" in selected_theme else "dark"
     if new_mode != st.session_state.theme_mode:
         st.session_state.theme_mode = new_mode
         st.rerun()
-    st.markdown('</div>', unsafe_allow_html=True)
+    render_html('</div>')
 
     # Database Status Card
-    st.markdown(f"""
+    render_html(f"""
     <div class="sidebar-card">
         <div class="sidebar-card-title">🗄️ Relational Database</div>
         <div class="sidebar-stat-row">
@@ -682,10 +865,10 @@ with st.sidebar:
             <span class="stat-val-highlight">5,000 ms</span>
         </div>
     </div>
-    """, unsafe_allow_html=True)
+    """)
 
     # Knowledge Base Card & Explorer
-    st.markdown(f"""
+    render_html(f"""
     <div class="sidebar-card">
         <div class="sidebar-card-title">🧠 Caching & AI Engine</div>
         <div class="sidebar-stat-row">
@@ -701,7 +884,7 @@ with st.sidebar:
             <span class="stat-val-highlight">{st.session_state.golden_count} Templates</span>
         </div>
     </div>
-    """, unsafe_allow_html=True)
+    """)
 
     with st.expander("📚 Browse Golden Queries", expanded=False):
         for idx, gq in enumerate(st.session_state.golden_list[:5]):
@@ -709,18 +892,18 @@ with st.sidebar:
             st.code(gq.get('sql', ''), language="sql")
 
     # Session Management
-    st.markdown('<div class="sidebar-card"><div class="sidebar-card-title">⚙️ Session Actions</div>', unsafe_allow_html=True)
+    render_html('<div class="sidebar-card"><div class="sidebar-card-title">⚙️ Session Actions</div>')
     if st.button("🗑️ Clear Chat History", use_container_width=True):
         st.session_state.messages = []
         st.session_state.saved_queries = set()
         st.session_state.session_id = f"ramp_{int(time.time())}"
         st.rerun()
-    st.markdown('</div>', unsafe_allow_html=True)
+    render_html('</div>')
 
 # ---------------------------------------------------------
 # Top Navigation Header
 # ---------------------------------------------------------
-st.markdown(f"""
+render_html(f"""
 <div class="nav-card">
     <div class="nav-left">
         <div class="brand-avatar">{SVG_LOGO}</div>
@@ -739,7 +922,7 @@ st.markdown(f"""
         </div>
     </div>
 </div>
-""", unsafe_allow_html=True)
+""")
 
 # ---------------------------------------------------------
 # Helper Functions: Visualizations & Tables
@@ -750,32 +933,40 @@ def render_chart_component(chart_info: dict, chart_id: str, bright: bool = True)
     title = chart_info.get("title", "Analytical Breakdown")
     labels = chart_info.get("labels", [])
     datasets = chart_info.get("datasets", [])
-    
-    vibrant_colors = [
-        "rgba(79, 70, 229, 0.85)",   # Indigo
-        "rgba(236, 72, 153, 0.85)",  # Pink
-        "rgba(6, 182, 212, 0.85)",   # Cyan
-        "rgba(245, 158, 11, 0.85)",  # Amber
-        "rgba(16, 185, 129, 0.85)"   # Emerald
-    ]
-    border_colors = ["#4F46E5", "#EC4899", "#06B6D4", "#F59E0B", "#10B981"]
 
-    if datasets and isinstance(datasets, list):
-        for ds in datasets:
-            if not ds.get("backgroundColor") or not isinstance(ds.get("backgroundColor"), list):
-                ds["backgroundColor"] = vibrant_colors[:len(labels)]
-                ds["borderColor"] = border_colors[:len(labels)]
-                ds["borderWidth"] = 1.5
-                ds["borderRadius"] = 8
+    palette_bright = [
+        "rgba(79, 70, 229, 0.85)",   # Electric Indigo
+        "rgba(14, 165, 233, 0.85)",  # Sky Blue
+        "rgba(16, 185, 129, 0.85)",  # Emerald
+        "rgba(245, 158, 11, 0.85)",  # Amber
+        "rgba(139, 92, 246, 0.85)"   # Purple
+    ]
+    palette_dark = [
+        "rgba(56, 189, 248, 0.85)",  # Light Sky
+        "rgba(129, 140, 248, 0.85)", # Light Indigo
+        "rgba(52, 211, 153, 0.85)",  # Emerald
+        "rgba(251, 191, 36, 0.85)",  # Amber
+        "rgba(192, 132, 252, 0.85)"  # Purple
+    ]
+    colors = palette_bright if bright else palette_dark
+
+    for i, ds in enumerate(datasets):
+        if "backgroundColor" not in ds:
+            if chart_type in ["pie", "doughnut"]:
+                ds["backgroundColor"] = colors[:len(labels)]
+            else:
+                ds["backgroundColor"] = colors[i % len(colors)]
+        if "borderColor" not in ds:
+            ds["borderColor"] = "#FFFFFF" if bright else "rgba(255, 255, 255, 0.15)"
+        ds["borderRadius"] = 8
 
     chart_config = {
-        "type": chart_type if chart_type != "horizontalBar" else "bar",
+        "type": chart_type,
         "data": {
             "labels": labels,
             "datasets": datasets
         },
         "options": {
-            "indexAxis": "y" if chart_type == "horizontalBar" else "x",
             "responsive": True,
             "maintainAspectRatio": False,
             "plugins": {
@@ -786,8 +977,8 @@ def render_chart_component(chart_info: dict, chart_id: str, bright: bool = True)
                     }
                 },
                 "tooltip": {
-                    "backgroundColor": "#FFFFFF" if bright else "rgba(18, 24, 46, 0.95)",
-                    "titleColor": "#1E1B4B" if bright else "#38BDF8",
+                    "backgroundColor": "#FFFFFF" if bright else "rgba(17, 24, 39, 0.95)",
+                    "titleColor": "#0F172A" if bright else "#38BDF8",
                     "bodyColor": "#334155" if bright else "#F8FAFC",
                     "borderColor": "#E2E8F0" if bright else "rgba(255, 255, 255, 0.15)",
                     "borderWidth": 1.5,
@@ -797,20 +988,20 @@ def render_chart_component(chart_info: dict, chart_id: str, bright: bool = True)
             },
             "scales": {
                 "x": {
-                    "grid": {"color": "rgba(226, 232, 240, 0.8)" if bright else "rgba(255, 255, 255, 0.06)"},
+                    "grid": {"color": "rgba(226, 232, 240, 0.7)" if bright else "rgba(255, 255, 255, 0.06)"},
                     "ticks": {"color": "#64748B" if bright else "#94A3B8", "font": {"family": "Plus Jakarta Sans", "size": 10.5}}
                 },
                 "y": {
-                    "grid": {"color": "rgba(226, 232, 240, 0.8)" if bright else "rgba(255, 255, 255, 0.06)"},
+                    "grid": {"color": "rgba(226, 232, 240, 0.7)" if bright else "rgba(255, 255, 255, 0.06)"},
                     "ticks": {"color": "#64748B" if bright else "#94A3B8", "font": {"family": "Plus Jakarta Sans", "size": 10.5}}
                 }
             }
         }
     }
     
-    bg_box = "rgba(255, 255, 255, 0.9)" if bright else "#0E1424"
+    bg_box = "#FFFFFF" if bright else "rgba(17, 24, 39, 0.9)"
     border_box = "#E2E8F0" if bright else "rgba(255, 255, 255, 0.08)"
-    title_col = "#4F46E5" if bright else "#38BDF8"
+    title_col = "#4338CA" if bright else "#38BDF8"
 
     html_code = f"""
     <!DOCTYPE html>
@@ -864,7 +1055,7 @@ def render_chart_component(chart_info: dict, chart_id: str, bright: bool = True)
 # Hero Section & Quick Prompt Cards (Shown when chat is empty)
 # ---------------------------------------------------------
 if len(st.session_state.messages) == 0:
-    st.markdown("""
+    render_html("""
     <div class="hero-container">
         <div class="hero-tag">✦ Enterprise Text-to-SQL Intelligence</div>
         <div class="hero-title">Smart Workshop Analytics, in Plain English.</div>
@@ -879,23 +1070,25 @@ if len(st.session_state.messages) == 0:
             <div class="feat-pill">📉 ~65% Token Pruning</div>
         </div>
     </div>
-    """, unsafe_allow_html=True)
+    """)
 
     quick_cards = [
-        {"icon": "💎", "tag": "REVENUE ANALYSIS", "title": "Virtus Service Revenue", "text": "What is the total service amount for Volkswagen Virtus?", "query": "What is the total service amount for Volkswagen Virtus?"},
-        {"icon": "📊", "tag": "BRAND COMPARISON", "title": "Brand Cost Comparison", "text": "Compare the average service cost for Audi and Toyota.", "query": "Compare the average service cost for Audi and Toyota."},
-        {"icon": "⚡", "tag": "EXPENSE AUDIT", "title": "Highest Value Services", "text": "What are the top 3 most expensive services by total amount?", "query": "What are the top 3 most expensive services by total amount?"},
-        {"icon": "🏢", "tag": "OPERATIONS METRICS", "title": "Workshop Capacity", "text": "How many workshops and employees are in the database?", "query": "How many workshops are there in the database?"}
+        {"icon": "💎", "tag": "REVENUE ANALYSIS", "title": "Virtus Revenue", "text": "What is the total service amount for Volkswagen Virtus?", "query": "What is the total service amount for Volkswagen Virtus?"},
+        {"icon": "📊", "tag": "BRAND COMPARISON", "title": "Brand Cost Compare", "text": "Compare the average service cost for Audi and Toyota.", "query": "Compare the average service cost for Audi and Toyota."},
+        {"icon": "⚡", "tag": "EXPENSE AUDIT", "title": "Top Expensive Services", "text": "What are the top 3 most expensive services by total amount?", "query": "What are the top 3 most expensive services by total amount?"},
+        {"icon": "🏢", "tag": "OPERATIONS METRICS", "title": "Workshop Capacity", "text": "How many workshops are there in the database?", "query": "How many workshops are there in the database?"}
     ]
 
     cols = st.columns(4)
     for idx, card in enumerate(quick_cards):
         with cols[idx]:
+            render_html('<div class="hero-card-col">')
             card_clicked = st.button(
                 f"{card['icon']} **{card['title']}**\n\n*{card['tag']}*\n\n{card['text']}", 
                 key=f"hero_prompt_{idx}", 
                 use_container_width=True
             )
+            render_html('</div>')
             if card_clicked:
                 st.session_state.pending_query = card["query"]
                 st.rerun()
@@ -905,11 +1098,11 @@ if len(st.session_state.messages) == 0:
 # ---------------------------------------------------------
 for msg_idx, msg in enumerate(st.session_state.messages):
     if msg["role"] == "user":
-        st.markdown(f"""
+        render_html(f"""
         <div class="user-bubble-row">
             <div class="user-bubble-box">{msg['content']}</div>
         </div>
-        """, unsafe_allow_html=True)
+        """)
     else:
         # Determine status badges
         cached_hit = msg.get("cached", False)
@@ -919,7 +1112,7 @@ for msg_idx, msg in enumerate(st.session_state.messages):
         if cached_hit:
             telemetry_html = '<span class="cache-pill-hit">⚡ Semantic Cache (&lt;1ms)</span> ' + telemetry_html
 
-        st.markdown(f"""
+        render_html(f"""
         <div class="assistant-wrapper">
             <div class="asst-header">
                 <div class="asst-identity">
@@ -932,7 +1125,8 @@ for msg_idx, msg in enumerate(st.session_state.messages):
                 <div class="asst-telemetry-row">{telemetry_html}</div>
             </div>
             <div class="asst-answer-text">{msg['content']}</div>
-        """, unsafe_allow_html=True)
+        </div>
+        """)
 
         chart_data = msg.get("chart_data")
         table_data = msg.get("table_data")
@@ -998,13 +1192,11 @@ for msg_idx, msg in enumerate(st.session_state.messages):
                         time.sleep(0.5)
                         st.rerun()
 
-        st.markdown('</div>', unsafe_allow_html=True)
-
 # ---------------------------------------------------------
 # Dynamic Suggestion Chips Row (Accessible Anytime)
 # ---------------------------------------------------------
 if len(st.session_state.messages) > 0:
-    st.markdown('<div style="margin: 18px 0 10px; font-size: 11.5px; font-weight: 700; color: #64748B; text-transform: uppercase; letter-spacing: 0.04em;">💡 Quick Analytical Prompts:</div>', unsafe_allow_html=True)
+    render_html('<div style="margin: 18px 0 10px; font-size: 11.5px; font-weight: 700; color: #64748B; text-transform: uppercase; letter-spacing: 0.04em;">💡 Quick Analytical Prompts:</div>')
     chip_cols = st.columns(4)
     chips = [
         ("🚗 Virtus Revenue", "What is the total service amount for Volkswagen Virtus?"),
