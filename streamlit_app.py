@@ -1,8 +1,8 @@
 """
 RAMP-GPT — Enterprise Autonomous Garage Intelligence Dashboard.
 Features ultra-modern corporate branding, radiant colorful backdrop,
-live Chart.js visualizations, interactive data tables with 1-click CSV export,
-collapsible SQL code inspector, and autonomous knowledge base caching.
+floating command-center chatbox, live Chart.js visualizations,
+interactive data tables with 1-click CSV export, and autonomous caching.
 """
 
 import os
@@ -115,7 +115,7 @@ if is_bright:
         
         .block-container {
             padding-top: 1.2rem !important;
-            padding-bottom: 7.5rem !important;
+            padding-bottom: 8.5rem !important;
             max-width: 980px !important;
             margin: 0 auto !important;
         }
@@ -267,9 +267,31 @@ if is_bright:
             font-size: 14.5px;
             color: #475569;
             max-width: 620px;
-            margin: 0 auto 28px;
+            margin: 0 auto 24px;
             line-height: 1.6;
             font-weight: 500;
+        }
+
+        /* Feature Pill Highlights Bar */
+        .feature-pills-row {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 28px;
+        }
+        .feat-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 5px 14px;
+            background: rgba(255, 255, 255, 0.75);
+            border: 1px solid rgba(226, 232, 240, 0.9);
+            border-radius: 9999px;
+            font-size: 11.5px;
+            font-weight: 700;
+            color: #475569;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
         }
 
         /* User Message Bubble */
@@ -279,7 +301,7 @@ if is_bright:
             margin-bottom: 20px;
         }
         .user-bubble-box {
-            background: linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%);
+            background: linear-gradient(135deg, #4F46E5 0%, #6366F1 50%, #8B5CF6 100%);
             border: 1px solid rgba(255, 255, 255, 0.3);
             border-radius: 20px 20px 4px 20px;
             padding: 14px 22px;
@@ -287,7 +309,7 @@ if is_bright:
             font-size: 15px;
             font-weight: 600;
             max-width: 82%;
-            box-shadow: 0 6px 24px rgba(79, 70, 229, 0.28);
+            box-shadow: 0 8px 24px rgba(79, 70, 229, 0.3);
             line-height: 1.5;
         }
 
@@ -368,33 +390,59 @@ if is_bright:
             font-weight: 500;
         }
 
-        /* Fixed Bottom Chat Bar */
+        /* Fixed Bottom Command Center Dock */
         div[data-testid="stChatInput"] {
-            position: fixed;
-            bottom: 24px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 100%;
-            max-width: 900px;
-            z-index: 999;
+            position: fixed !important;
+            bottom: 24px !important;
+            left: 50% !important;
+            transform: translateX(-50%) !important;
+            width: 100% !important;
+            max-width: 920px !important;
+            z-index: 9999 !important;
+            padding: 0 16px !important;
         }
         div[data-testid="stChatInput"] > div {
-            background: rgba(255, 255, 255, 0.94) !important;
-            border: 1.5px solid rgba(99, 102, 241, 0.3) !important;
-            border-radius: 9999px !important;
-            backdrop-filter: blur(24px) !important;
-            -webkit-backdrop-filter: blur(24px) !important;
-            box-shadow: 0 12px 40px rgba(99, 102, 241, 0.16) !important;
-            transition: all 0.2s ease !important;
+            background: rgba(255, 255, 255, 0.95) !important;
+            border: 1.5px solid rgba(99, 102, 241, 0.28) !important;
+            border-radius: 26px !important;
+            backdrop-filter: blur(28px) !important;
+            -webkit-backdrop-filter: blur(28px) !important;
+            box-shadow: 0 16px 50px rgba(99, 102, 241, 0.18), 0 2px 8px rgba(0, 0, 0, 0.04) !important;
+            padding: 6px 14px !important;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
         }
         div[data-testid="stChatInput"] > div:focus-within {
             border-color: #4F46E5 !important;
-            box-shadow: 0 12px 45px rgba(79, 70, 229, 0.25) !important;
+            box-shadow: 0 18px 55px rgba(79, 70, 229, 0.28), 0 0 0 3px rgba(79, 70, 229, 0.12) !important;
+            transform: translateY(-2px) !important;
         }
         div[data-testid="stChatInput"] textarea {
             color: #0F172A !important;
-            font-size: 14.5px !important;
+            font-size: 15px !important;
             font-weight: 500 !important;
+            line-height: 1.5 !important;
+            padding: 8px 12px !important;
+        }
+        div[data-testid="stChatInput"] textarea::placeholder {
+            color: #94A3B8 !important;
+            font-weight: 400 !important;
+        }
+        div[data-testid="stChatInput"] button {
+            background: linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%) !important;
+            color: #FFFFFF !important;
+            border-radius: 16px !important;
+            border: none !important;
+            width: 38px !important;
+            height: 38px !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            box-shadow: 0 4px 14px rgba(79, 70, 229, 0.4) !important;
+            transition: all 0.2s ease !important;
+        }
+        div[data-testid="stChatInput"] button:hover {
+            transform: scale(1.08) !important;
+            box-shadow: 0 6px 20px rgba(79, 70, 229, 0.55) !important;
         }
 
         /* Sidebar Styling */
@@ -483,7 +531,7 @@ else:
         
         .block-container {
             padding-top: 1.2rem !important;
-            padding-bottom: 7.5rem !important;
+            padding-bottom: 8.5rem !important;
             max-width: 980px !important;
             margin: 0 auto !important;
         }
@@ -541,7 +589,10 @@ else:
         .hero-container { text-align: center; padding: 34px 20px 20px; margin-bottom: 20px; }
         .hero-tag { display: inline-flex; padding: 4px 14px; background: rgba(0, 240, 255, 0.1); border: 1px solid rgba(0, 240, 255, 0.3); border-radius: 9999px; color: #38BDF8; font-size: 11px; font-weight: 700; text-transform: uppercase; margin-bottom: 14px; }
         .hero-title { font-size: 36px; font-weight: 800; background: linear-gradient(135deg, #FFF 20%, #A5B4FC 60%, #F472B6 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .hero-description { font-size: 14.5px; color: #CBD5E1; max-width: 620px; margin: 0 auto 28px; line-height: 1.6; }
+        .hero-description { font-size: 14.5px; color: #CBD5E1; max-width: 620px; margin: 0 auto 24px; line-height: 1.6; }
+
+        .feature-pills-row { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin-bottom: 28px; }
+        .feat-pill { display: inline-flex; align-items: center; gap: 6px; padding: 5px 14px; background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 9999px; font-size: 11.5px; font-weight: 700; color: #E2E8F0; }
 
         .user-bubble-row { display: flex; justify-content: flex-end; margin-bottom: 20px; }
         .user-bubble-box { background: linear-gradient(135deg, #1E293B, #0F172A); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 20px 20px 4px 20px; padding: 14px 22px; color: #FFF; font-size: 15px; font-weight: 600; max-width: 82%; }
@@ -554,9 +605,10 @@ else:
         .latency-pill { background: rgba(255, 255, 255, 0.08); color: #CBD5E1; border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 9999px; padding: 4px 11px; font-size: 11px; font-weight: 600; font-family: 'JetBrains Mono', monospace; }
         .asst-answer-text { font-size: 15.5px; color: #F8FAFC; line-height: 1.65; margin-bottom: 18px; font-weight: 500; }
 
-        div[data-testid="stChatInput"] { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); width: 100%; max-width: 900px; z-index: 999; }
-        div[data-testid="stChatInput"] > div { background: rgba(18, 24, 46, 0.9) !important; border: 1.5px solid rgba(0, 240, 255, 0.3) !important; border-radius: 9999px !important; backdrop-filter: blur(24px) !important; }
-        div[data-testid="stChatInput"] textarea { color: #FFF !important; }
+        div[data-testid="stChatInput"] { position: fixed !important; bottom: 24px !important; left: 50% !important; transform: translateX(-50%) !important; width: 100% !important; max-width: 920px !important; z-index: 9999 !important; padding: 0 16px !important; }
+        div[data-testid="stChatInput"] > div { background: rgba(18, 24, 46, 0.94) !important; border: 1.5px solid rgba(0, 240, 255, 0.35) !important; border-radius: 26px !important; backdrop-filter: blur(28px) !important; box-shadow: 0 16px 50px rgba(0, 0, 0, 0.65), 0 0 25px rgba(0, 240, 255, 0.15) !important; padding: 6px 14px !important; }
+        div[data-testid="stChatInput"] textarea { color: #FFF !important; font-size: 15px !important; }
+        div[data-testid="stChatInput"] button { background: linear-gradient(135deg, #00F0FF 0%, #7000FF 100%) !important; color: #070912 !important; border-radius: 16px !important; width: 38px !important; height: 38px !important; }
 
         section[data-testid="stSidebar"] { background: #0A0F1D !important; border-right: 1px solid rgba(255, 255, 255, 0.08) !important; }
         .sidebar-card { background: rgba(18, 24, 46, 0.8); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 14px; padding: 14px 16px; margin-bottom: 14px; }
@@ -814,27 +866,33 @@ def render_chart_component(chart_info: dict, chart_id: str, bright: bool = True)
 if len(st.session_state.messages) == 0:
     st.markdown("""
     <div class="hero-container">
-        <div class="hero-tag">✦ Autonomous Workshop Analytics</div>
-        <div class="hero-title">Ask anything about garage operations</div>
+        <div class="hero-tag">✦ Enterprise Text-to-SQL Intelligence</div>
+        <div class="hero-title">Smart Workshop Analytics, in Plain English.</div>
         <div class="hero-description">
-            Translate conversational questions into multi-table MySQL statements with sub-second retrieval, 
-            heuristic self-healing validation, and dynamic visual dashboards.
+            Translate conversational operational questions into multi-table MySQL statements with sub-second retrieval, 
+            10-layer self-healing validation, zero-bloat semantic caching, and dynamic visualizations.
+        </div>
+        <div class="feature-pills-row">
+            <div class="feat-pill">⚡ &lt;1ms Semantic Cache</div>
+            <div class="feat-pill">🛡️ AST Read-Only Guard</div>
+            <div class="feat-pill">🔄 10-Layer Self-Healing</div>
+            <div class="feat-pill">📉 ~65% Token Pruning</div>
         </div>
     </div>
     """, unsafe_allow_html=True)
 
     quick_cards = [
-        {"icon": "🚗", "title": "Virtus Service Revenue", "text": "What is the total service amount for Volkswagen Virtus?", "query": "What is the total service amount for Volkswagen Virtus?"},
-        {"icon": "📊", "title": "Brand Cost Comparison", "text": "Compare the average service cost for Audi and Toyota.", "query": "Compare the average service cost for Audi and Toyota."},
-        {"icon": "🏆", "title": "Highest Value Services", "text": "What are the top 3 most expensive services by total amount?", "query": "What are the top 3 most expensive services by total amount?"},
-        {"icon": "👥", "title": "Workshop Capacity", "text": "How many workshops and employees are in the database?", "query": "How many workshops are there in the database?"}
+        {"icon": "💎", "tag": "REVENUE ANALYSIS", "title": "Virtus Service Revenue", "text": "What is the total service amount for Volkswagen Virtus?", "query": "What is the total service amount for Volkswagen Virtus?"},
+        {"icon": "📊", "tag": "BRAND COMPARISON", "title": "Brand Cost Comparison", "text": "Compare the average service cost for Audi and Toyota.", "query": "Compare the average service cost for Audi and Toyota."},
+        {"icon": "⚡", "tag": "EXPENSE AUDIT", "title": "Highest Value Services", "text": "What are the top 3 most expensive services by total amount?", "query": "What are the top 3 most expensive services by total amount?"},
+        {"icon": "🏢", "tag": "OPERATIONS METRICS", "title": "Workshop Capacity", "text": "How many workshops and employees are in the database?", "query": "How many workshops are there in the database?"}
     ]
 
     cols = st.columns(4)
     for idx, card in enumerate(quick_cards):
         with cols[idx]:
             card_clicked = st.button(
-                f"{card['icon']} **{card['title']}**\n\n{card['text']}", 
+                f"{card['icon']} **{card['title']}**\n\n*{card['tag']}*\n\n{card['text']}", 
                 key=f"hero_prompt_{idx}", 
                 use_container_width=True
             )
@@ -926,28 +984,46 @@ for msg_idx, msg in enumerate(st.session_state.messages):
                 tab_idx += 1
 
         # Action Buttons (Thumbs-Up Knowledge Base Ingestion)
-        col_act1, col_act2 = st.columns([3, 7])
+        col_act1, col_act2 = st.columns([3.5, 6.5])
         with col_act1:
             if not cached_hit and sql_text:
                 if msg_idx in st.session_state.saved_queries:
-                    st.button("✓ Saved to Golden Cache", key=f"saved_{msg_idx}", disabled=True)
+                    st.button("✓ Saved in Knowledge Base", key=f"saved_{msg_idx}", disabled=True)
                 else:
                     if st.button("👍 Add to Golden Knowledge Base", key=f"thumb_{msg_idx}"):
                         save_golden_query(msg.get("user_query", ""), sql_text)
                         st.session_state.saved_queries.add(msg_idx)
                         st.session_state.golden_count += 1
-                        st.toast("Verified query added to Knowledge Base!", icon="✅")
+                        st.toast("Verified query added to Golden Cache!", icon="✅")
                         time.sleep(0.5)
                         st.rerun()
 
         st.markdown('</div>', unsafe_allow_html=True)
 
 # ---------------------------------------------------------
+# Dynamic Suggestion Chips Row (Accessible Anytime)
+# ---------------------------------------------------------
+if len(st.session_state.messages) > 0:
+    st.markdown('<div style="margin: 18px 0 10px; font-size: 11.5px; font-weight: 700; color: #64748B; text-transform: uppercase; letter-spacing: 0.04em;">💡 Quick Analytical Prompts:</div>', unsafe_allow_html=True)
+    chip_cols = st.columns(4)
+    chips = [
+        ("🚗 Virtus Revenue", "What is the total service amount for Volkswagen Virtus?"),
+        ("📊 Audi vs Toyota", "Compare the average service cost for Audi and Toyota."),
+        ("⚡ Top 3 Services", "What are the top 3 most expensive services by total amount?"),
+        ("🏢 Total Workshops", "How many workshops are there in the database?")
+    ]
+    for c_idx, (c_label, c_query) in enumerate(chips):
+        with chip_cols[c_idx]:
+            if st.button(c_label, key=f"chip_btn_{c_idx}", use_container_width=True):
+                st.session_state.pending_query = c_query
+                st.rerun()
+
+# ---------------------------------------------------------
 # Chat Input & Query Pipeline Invocation
 # ---------------------------------------------------------
 input_query = st.chat_input("Ask a question about workshop operations, vehicles, billing, complaints...")
 
-# Handle pending query from hero cards
+# Handle pending query from hero cards or quick chips
 if "pending_query" in st.session_state and st.session_state.pending_query:
     input_query = st.session_state.pending_query
     st.session_state.pending_query = None
