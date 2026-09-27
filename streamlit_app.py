@@ -1050,12 +1050,6 @@ if len(st.session_state.messages) == 0:
             Translate conversational operational questions into multi-table MySQL statements with sub-second retrieval, 
             10-layer self-healing validation, zero-bloat semantic caching, and dynamic visualizations.
         </div>
-        <div class="feature-pills-row">
-            <div class="feat-pill">⚡ &lt;1ms Semantic Cache</div>
-            <div class="feat-pill">🛡️ AST Read-Only Guard</div>
-            <div class="feat-pill">🔄 10-Layer Self-Healing</div>
-            <div class="feat-pill">📉 ~65% Token Pruning</div>
-        </div>
     </div>
     """)
 
