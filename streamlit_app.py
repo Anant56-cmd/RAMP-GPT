@@ -1,7 +1,7 @@
 """
-RAMP-GPT — Next-Generation Autonomous Garage Intelligence Dashboard.
-Features ultra-modern vibrant colorful design, luminous radiant background mesh,
-live Chart.js telemetry visualizations, interactive data tables with 1-click CSV export,
+RAMP-GPT — Enterprise Autonomous Garage Intelligence Dashboard.
+Features ultra-modern corporate branding, radiant colorful backdrop,
+live Chart.js visualizations, interactive data tables with 1-click CSV export,
 collapsible SQL code inspector, and autonomous knowledge base caching.
 """
 
@@ -26,20 +26,32 @@ from app.services.retriever import load_golden_queries, save_golden_query
 from app.services.audit_service import log_audit_event
 
 # ---------------------------------------------------------
-# Page Configuration
+# Page Configuration & Professional Branding
 # ---------------------------------------------------------
+LOGO_PATH = os.path.join(PROJECT_ROOT, "assets", "logo.png")
+PAGE_ICON = LOGO_PATH if os.path.exists(LOGO_PATH) else "⚡"
+
 st.set_page_config(
-    page_title="RAMP-GPT — Garage Intelligence",
-    page_icon="🚗",
+    page_title="RAMP-GPT — Enterprise Garage Intelligence",
+    page_icon=PAGE_ICON,
     layout="wide",
     initial_sidebar_state="expanded"
 )
 
 # ---------------------------------------------------------
-# System Diagnostics & State Initialization
+# Session State Initialization
 # ---------------------------------------------------------
 if "theme_mode" not in st.session_state:
-    st.session_state.theme_mode = "bright"  # default to bright & colorful
+    st.session_state.theme_mode = "bright"
+
+if "messages" not in st.session_state:
+    st.session_state.messages = []
+
+if "session_id" not in st.session_state:
+    st.session_state.session_id = f"ramp_{int(time.time())}"
+
+if "saved_queries" not in st.session_state:
+    st.session_state.saved_queries = set()
 
 if "system_status" not in st.session_state:
     try:
@@ -58,28 +70,33 @@ if "system_status" not in st.session_state:
             "pool": {"checked_in": 0, "pool_size": 5}
         }
 
-if "messages" not in st.session_state:
-    st.session_state.messages = []
-
-if "session_id" not in st.session_state:
-    st.session_state.session_id = f"ramp_session_{int(time.time())}"
-
 if "golden_count" not in st.session_state:
     try:
         golden_data = load_golden_queries()
         st.session_state.golden_count = len(golden_data)
+        st.session_state.golden_list = golden_data
     except Exception:
         st.session_state.golden_count = 24
+        st.session_state.golden_list = []
 
 active_engine_name = st.session_state.system_status.get("engine", "qwen/qwen3.8-27b (Groq Cloud)")
 db_online = st.session_state.system_status.get("db_connected", True)
 is_bright = (st.session_state.theme_mode == "bright")
 
+# Corporate SVG Logo Icon
+SVG_LOGO = """
+<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+  <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+  <polyline points="2 17 12 22 22 17"></polyline>
+  <polyline points="2 12 12 17 22 12"></polyline>
+</svg>
+"""
+
 # ---------------------------------------------------------
-# Dynamic CSS Injection (Bright & Colorful vs Vivid Aurora)
+# Design System & Responsive CSS Styling
 # ---------------------------------------------------------
 if is_bright:
-    # 🌈 RADIANT BRIGHT & COLORFUL THEME
+    # 🌈 RADIANT BRIGHT & COLORFUL THEME (DEFAULT)
     st.markdown("""
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
@@ -115,44 +132,27 @@ if is_bright:
             position: absolute;
             border-radius: 50%;
             filter: blur(120px);
-            opacity: 0.55;
+            opacity: 0.52;
             animation: orb-drift 22s infinite alternate ease-in-out;
         }
-        .orb-1 {
-            top: -15%; left: -10%; width: 50vw; height: 50vw;
-            background: #818CF8; /* Vibrant Indigo */
-            animation-delay: 0s;
-        }
-        .orb-2 {
-            top: 25%; right: -15%; width: 55vw; height: 55vw;
-            background: #F472B6; /* Radiant Pink */
-            animation-delay: -6s;
-        }
-        .orb-3 {
-            bottom: -20%; left: 15%; width: 50vw; height: 50vw;
-            background: #38BDF8; /* Sky Cyan */
-            animation-delay: -12s;
-        }
-        .orb-4 {
-            top: 60%; left: 55%; width: 35vw; height: 35vw;
-            background: #FBBF24; /* Warm Amber */
-            opacity: 0.35;
-            animation-delay: -18s;
-        }
+        .orb-1 { top: -15%; left: -10%; width: 50vw; height: 50vw; background: #818CF8; animation-delay: 0s; }
+        .orb-2 { top: 25%; right: -15%; width: 55vw; height: 55vw; background: #F472B6; animation-delay: -6s; }
+        .orb-3 { bottom: -20%; left: 15%; width: 50vw; height: 50vw; background: #38BDF8; animation-delay: -12s; }
+        .orb-4 { top: 60%; left: 55%; width: 35vw; height: 35vw; background: #FBBF24; opacity: 0.35; animation-delay: -18s; }
 
         @keyframes orb-drift {
             0% { transform: translate(0, 0) scale(1) rotate(0deg); }
-            50% { transform: translate(50px, 35px) scale(1.08) rotate(8deg); }
-            100% { transform: translate(-35px, -30px) scale(0.94) rotate(-8deg); }
+            50% { transform: translate(45px, 35px) scale(1.06) rotate(8deg); }
+            100% { transform: translate(-35px, -30px) scale(0.95) rotate(-8deg); }
         }
 
-        /* Floating Bright Navbar */
+        /* Floating Navbar */
         .nav-card {
             display: flex;
             align-items: center;
             justify-content: space-between;
             padding: 14px 24px;
-            background: rgba(255, 255, 255, 0.86);
+            background: rgba(255, 255, 255, 0.88);
             border: 1px solid rgba(255, 255, 255, 0.95);
             border-radius: 20px;
             backdrop-filter: blur(20px);
@@ -160,16 +160,21 @@ if is_bright:
             margin-bottom: 24px;
             box-shadow: 0 10px 30px rgba(99, 102, 241, 0.08), 0 1px 3px rgba(0, 0, 0, 0.04);
         }
+        .nav-left {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
         .brand-avatar {
-            width: 40px;
-            height: 40px;
+            width: 42px;
+            height: 42px;
             border-radius: 12px;
             background: linear-gradient(135deg, #4F46E5 0%, #7C3AED 50%, #EC4899 100%);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 20px;
-            box-shadow: 0 4px 16px rgba(99, 102, 241, 0.35);
+            color: #FFFFFF;
+            box-shadow: 0 4px 16px rgba(79, 70, 229, 0.35);
         }
         .brand-heading {
             font-size: 18px;
@@ -185,6 +190,11 @@ if is_bright:
             font-weight: 600;
             color: #64748B;
             letter-spacing: 0.02em;
+        }
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
         .badge-pill {
             display: inline-flex;
@@ -256,36 +266,10 @@ if is_bright:
         .hero-description {
             font-size: 14.5px;
             color: #475569;
-            max-width: 600px;
+            max-width: 620px;
             margin: 0 auto 28px;
             line-height: 1.6;
             font-weight: 500;
-        }
-
-        /* Quick Prompt Cards */
-        .prompt-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 14px;
-            margin-bottom: 28px;
-        }
-        div[data-testid="stHorizontalBlock"] button {
-            background: rgba(255, 255, 255, 0.88) !important;
-            border: 1.5px solid rgba(226, 232, 240, 0.9) !important;
-            border-radius: 16px !important;
-            color: #1E293B !important;
-            font-weight: 600 !important;
-            padding: 16px 14px !important;
-            box-shadow: 0 4px 16px rgba(99, 102, 241, 0.06) !important;
-            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
-            text-align: left !important;
-        }
-        div[data-testid="stHorizontalBlock"] button:hover {
-            border-color: #6366F1 !important;
-            transform: translateY(-3px) !important;
-            box-shadow: 0 10px 24px rgba(99, 102, 241, 0.18) !important;
-            background: #FFFFFF !important;
-            color: #4338CA !important;
         }
 
         /* User Message Bubble */
@@ -313,7 +297,7 @@ if is_bright:
             border: 1px solid rgba(226, 232, 240, 0.95);
             border-radius: 24px;
             padding: 24px 28px;
-            margin-bottom: 28px;
+            margin-bottom: 24px;
             backdrop-filter: blur(20px);
             box-shadow: 0 12px 36px rgba(99, 102, 241, 0.08), 0 2px 4px rgba(0, 0, 0, 0.02);
             transition: all 0.2s ease;
@@ -341,7 +325,7 @@ if is_bright:
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 16px;
+            font-size: 15px;
             color: #FFF;
             box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
         }
@@ -384,53 +368,7 @@ if is_bright:
             font-weight: 500;
         }
 
-        /* Tabular Display (Bright & Crisp) */
-        .table-container {
-            margin: 16px 0;
-            border: 1px solid #E2E8F0;
-            border-radius: 14px;
-            overflow: hidden;
-            background: #FFFFFF;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-        }
-        .table-header-title {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 10px 16px;
-            background: #F8FAFC;
-            border-bottom: 1px solid #E2E8F0;
-            font-size: 12px;
-            font-weight: 700;
-            color: #4F46E5;
-        }
-        .styled-grid-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 13px;
-        }
-        .styled-grid-table th {
-            background: #F1F5F9;
-            color: #334155;
-            text-align: left;
-            padding: 10px 16px;
-            font-weight: 700;
-            font-size: 11.5px;
-            letter-spacing: 0.04em;
-            text-transform: uppercase;
-            border-bottom: 1px solid #E2E8F0;
-        }
-        .styled-grid-table td {
-            padding: 10px 16px;
-            color: #0F172A;
-            border-bottom: 1px solid #F1F5F9;
-            font-variant-numeric: tabular-nums;
-        }
-        .styled-grid-table tr:hover {
-            background: #F8FAFC;
-        }
-
-        /* Fixed Bottom Chat Bar (Bright Glass) */
+        /* Fixed Bottom Chat Bar */
         div[data-testid="stChatInput"] {
             position: fixed;
             bottom: 24px;
@@ -459,7 +397,7 @@ if is_bright:
             font-weight: 500 !important;
         }
 
-        /* Sidebar Glassmorphic Bright Styling */
+        /* Sidebar Styling */
         section[data-testid="stSidebar"] {
             background: linear-gradient(180deg, #FFFFFF 0%, #F8FAFC 100%) !important;
             border-right: 1px solid #E2E8F0 !important;
@@ -498,9 +436,26 @@ if is_bright:
             font-weight: 700;
             color: #4338CA;
         }
+
+        /* Streamlit Tab Styling */
+        .stTabs [data-baseweb="tab-list"] {
+            gap: 8px;
+            border-bottom: 1px solid #E2E8F0;
+            margin-bottom: 14px;
+        }
+        .stTabs [data-baseweb="tab"] {
+            font-weight: 700 !important;
+            font-size: 12.5px !important;
+            color: #64748B !important;
+            padding: 8px 16px !important;
+            border-radius: 8px 8px 0 0 !important;
+        }
+        .stTabs [aria-selected="true"] {
+            color: #4F46E5 !important;
+            border-bottom: 2px solid #4F46E5 !important;
+        }
     </style>
 
-    <!-- Radiant Ambient Blobs -->
     <div class="ambient-mesh">
         <div class="glow-orb orb-1"></div>
         <div class="glow-orb orb-2"></div>
@@ -571,14 +526,12 @@ else:
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45);
         }
         .brand-avatar {
-            width: 40px; height: 40px; border-radius: 12px;
+            width: 42px; height: 42px; border-radius: 12px;
             background: linear-gradient(135deg, #00F0FF, #7000FF, #EC4899);
-            display: flex; align-items: center; justify-content: center; font-size: 20px;
+            display: flex; align-items: center; justify-content: center; color: #FFF;
             box-shadow: 0 0 20px rgba(0, 240, 255, 0.5);
         }
-        .brand-heading {
-            font-size: 18px; font-weight: 800; color: #FFF; line-height: 1.1;
-        }
+        .brand-heading { font-size: 18px; font-weight: 800; color: #FFF; line-height: 1.1; }
         .brand-sub { font-size: 11px; color: #94A3B8; }
         .badge-pill { display: inline-flex; align-items: center; gap: 6px; padding: 5px 12px; border-radius: 9999px; font-size: 11px; font-weight: 700; }
         .badge-mysql { background: rgba(16, 185, 129, 0.15); color: #34D399; border: 1px solid rgba(16, 185, 129, 0.35); }
@@ -588,40 +541,18 @@ else:
         .hero-container { text-align: center; padding: 34px 20px 20px; margin-bottom: 20px; }
         .hero-tag { display: inline-flex; padding: 4px 14px; background: rgba(0, 240, 255, 0.1); border: 1px solid rgba(0, 240, 255, 0.3); border-radius: 9999px; color: #38BDF8; font-size: 11px; font-weight: 700; text-transform: uppercase; margin-bottom: 14px; }
         .hero-title { font-size: 36px; font-weight: 800; background: linear-gradient(135deg, #FFF 20%, #A5B4FC 60%, #F472B6 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .hero-description { font-size: 14.5px; color: #CBD5E1; max-width: 600px; margin: 0 auto 28px; line-height: 1.6; }
-
-        div[data-testid="stHorizontalBlock"] button {
-            background: rgba(30, 41, 75, 0.7) !important;
-            border: 1.5px solid rgba(255, 255, 255, 0.12) !important;
-            border-radius: 16px !important;
-            color: #E2E8F0 !important;
-            font-weight: 600 !important;
-            padding: 16px 14px !important;
-        }
-        div[data-testid="stHorizontalBlock"] button:hover {
-            border-color: #00F0FF !important;
-            background: rgba(40, 56, 105, 0.9) !important;
-            color: #FFF !important;
-            transform: translateY(-3px) !important;
-        }
+        .hero-description { font-size: 14.5px; color: #CBD5E1; max-width: 620px; margin: 0 auto 28px; line-height: 1.6; }
 
         .user-bubble-row { display: flex; justify-content: flex-end; margin-bottom: 20px; }
         .user-bubble-box { background: linear-gradient(135deg, #1E293B, #0F172A); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 20px 20px 4px 20px; padding: 14px 22px; color: #FFF; font-size: 15px; font-weight: 600; max-width: 82%; }
 
-        .assistant-wrapper { background: rgba(18, 24, 46, 0.88); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 24px; padding: 24px 28px; margin-bottom: 28px; backdrop-filter: blur(20px); }
+        .assistant-wrapper { background: rgba(18, 24, 46, 0.88); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 24px; padding: 24px 28px; margin-bottom: 24px; backdrop-filter: blur(20px); }
         .asst-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
-        .asst-glow-icon { width: 34px; height: 34px; border-radius: 10px; background: linear-gradient(135deg, #00F0FF, #EC4899); display: flex; align-items: center; justify-content: center; font-size: 16px; }
+        .asst-glow-icon { width: 34px; height: 34px; border-radius: 10px; background: linear-gradient(135deg, #00F0FF, #EC4899); display: flex; align-items: center; justify-content: center; font-size: 15px; color: #FFF; }
         .asst-title { font-size: 12.5px; font-weight: 800; color: #C084FC; text-transform: uppercase; }
         .cache-pill-hit { background: rgba(16, 185, 129, 0.2); color: #34D399; border: 1px solid rgba(16, 185, 129, 0.4); border-radius: 9999px; padding: 4px 11px; font-size: 11px; font-weight: 700; }
         .latency-pill { background: rgba(255, 255, 255, 0.08); color: #CBD5E1; border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 9999px; padding: 4px 11px; font-size: 11px; font-weight: 600; font-family: 'JetBrains Mono', monospace; }
         .asst-answer-text { font-size: 15.5px; color: #F8FAFC; line-height: 1.65; margin-bottom: 18px; font-weight: 500; }
-
-        .table-container { margin: 16px 0; border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 14px; overflow: hidden; background: #0B0E17; }
-        .table-header-title { display: flex; align-items: center; justify-content: space-between; padding: 10px 16px; background: #131A30; border-bottom: 1px solid rgba(255, 255, 255, 0.08); font-size: 12px; font-weight: 700; color: #38BDF8; }
-        .styled-grid-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-        .styled-grid-table th { background: #10162A; color: #94A3B8; text-align: left; padding: 10px 16px; font-weight: 700; border-bottom: 1px solid rgba(255, 255, 255, 0.06); }
-        .styled-grid-table td { padding: 10px 16px; color: #E2E8F0; border-bottom: 1px solid rgba(255, 255, 255, 0.04); }
-        .styled-grid-table tr:hover { background: rgba(255, 255, 255, 0.03); }
 
         div[data-testid="stChatInput"] { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); width: 100%; max-width: 900px; z-index: 999; }
         div[data-testid="stChatInput"] > div { background: rgba(18, 24, 46, 0.9) !important; border: 1.5px solid rgba(0, 240, 255, 0.3) !important; border-radius: 9999px !important; backdrop-filter: blur(24px) !important; }
@@ -632,6 +563,10 @@ else:
         .sidebar-card-title { font-size: 11px; font-weight: 800; color: #38BDF8; text-transform: uppercase; margin-bottom: 10px; }
         .sidebar-stat-row { display: flex; justify-content: space-between; align-items: center; font-size: 12.5px; color: #CBD5E1; padding: 4px 0; }
         .stat-val-highlight { font-family: 'JetBrains Mono', monospace; font-weight: 700; color: #38BDF8; }
+
+        .stTabs [data-baseweb="tab-list"] { gap: 8px; border-bottom: 1px solid rgba(255, 255, 255, 0.1); margin-bottom: 14px; }
+        .stTabs [data-baseweb="tab"] { font-weight: 700 !important; font-size: 12.5px !important; color: #94A3B8 !important; padding: 8px 16px !important; }
+        .stTabs [aria-selected="true"] { color: #38BDF8 !important; border-bottom: 2px solid #38BDF8 !important; }
     </style>
 
     <div class="ambient-mesh">
@@ -643,21 +578,23 @@ else:
     """, unsafe_allow_html=True)
 
 # ---------------------------------------------------------
-# Sidebar: System Diagnostics & Theme Customizer
+# Sidebar: System Diagnostics & Theme Controls
 # ---------------------------------------------------------
 with st.sidebar:
-    st.markdown("""
-    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 18px;">
-        <div style="width: 34px; height: 34px; border-radius: 10px; background: linear-gradient(135deg, #4F46E5, #EC4899); display: flex; align-items: center; justify-content: center; font-size: 18px; color: #FFF;">🚗</div>
+    st.markdown(f"""
+    <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 20px;">
+        <div style="width: 36px; height: 36px; border-radius: 10px; background: linear-gradient(135deg, #4F46E5, #EC4899); display: flex; align-items: center; justify-content: center; color: #FFF;">
+            {SVG_LOGO}
+        </div>
         <div>
-            <div style="font-weight: 800; font-size: 16px;">RAMP-GPT</div>
-            <div style="font-size: 10.5px; color: #64748B;">Garage Intelligence v2.0</div>
+            <div style="font-weight: 800; font-size: 16px; letter-spacing: -0.01em;">RAMP-GPT</div>
+            <div style="font-size: 11px; color: #64748B; font-weight: 600;">Enterprise Intelligence v2.0</div>
         </div>
     </div>
     """, unsafe_allow_html=True)
 
-    # Theme Switcher Control
-    st.markdown('<div class="sidebar-card"><div class="sidebar-card-title">🎨 Visual Aesthetic</div>', unsafe_allow_html=True)
+    # Theme Switcher
+    st.markdown('<div class="sidebar-card"><div class="sidebar-card-title">🎨 Theme Appearance</div>', unsafe_allow_html=True)
     selected_theme = st.radio(
         "Theme Palette",
         options=["🌈 Radiant Bright (Colorful)", "🌌 Vivid Cyber Aurora"],
@@ -670,23 +607,22 @@ with st.sidebar:
         st.rerun()
     st.markdown('</div>', unsafe_allow_html=True)
 
-    # Database Pool Status Card
-    pool_info = st.session_state.system_status.get("pool", {})
+    # Database Status Card
     st.markdown(f"""
     <div class="sidebar-card">
-        <div class="sidebar-card-title">🗄️ Database Engine</div>
+        <div class="sidebar-card-title">🗄️ Relational Database</div>
         <div class="sidebar-stat-row">
-            <span>Status</span>
+            <span>MySQL 8.0</span>
             <span class="stat-val-highlight" style="color: {'#059669' if is_bright else '#34D399'};">
                 {'● Online (3306)' if db_online else '○ Offline'}
             </span>
         </div>
         <div class="sidebar-stat-row">
-            <span>Database</span>
+            <span>Schema</span>
             <span class="stat-val-highlight">rag (6 tables)</span>
         </div>
         <div class="sidebar-stat-row">
-            <span>Connection Pool</span>
+            <span>Pool Mode</span>
             <span class="stat-val-highlight">QueuePool (size=5)</span>
         </div>
         <div class="sidebar-stat-row">
@@ -696,34 +632,36 @@ with st.sidebar:
     </div>
     """, unsafe_allow_html=True)
 
-    # Knowledge Base Card
+    # Knowledge Base Card & Explorer
     st.markdown(f"""
     <div class="sidebar-card">
-        <div class="sidebar-card-title">🧠 Caching & AI Model</div>
+        <div class="sidebar-card-title">🧠 Caching & AI Engine</div>
         <div class="sidebar-stat-row">
             <span>Primary LLM</span>
             <span class="stat-val-highlight">Groq (Qwen 27B)</span>
-        </div>
-        <div class="sidebar-stat-row">
-            <span>Fallback LLM</span>
-            <span class="stat-val-highlight">Ollama (7B Coder)</span>
         </div>
         <div class="sidebar-stat-row">
             <span>Semantic Cache</span>
             <span class="stat-val-highlight">&lt; 1 ms Jaccard</span>
         </div>
         <div class="sidebar-stat-row">
-            <span>Golden Queries</span>
-            <span class="stat-val-highlight">{st.session_state.golden_count} Verified</span>
+            <span>Golden Knowledge</span>
+            <span class="stat-val-highlight">{st.session_state.golden_count} Templates</span>
         </div>
     </div>
     """, unsafe_allow_html=True)
 
-    # Session Management Card
+    with st.expander("📚 Browse Golden Queries", expanded=False):
+        for idx, gq in enumerate(st.session_state.golden_list[:5]):
+            st.markdown(f"**{idx+1}. {gq.get('query', '')}**")
+            st.code(gq.get('sql', ''), language="sql")
+
+    # Session Management
     st.markdown('<div class="sidebar-card"><div class="sidebar-card-title">⚙️ Session Actions</div>', unsafe_allow_html=True)
-    if st.button("🗑️ Reset Chat History", use_container_width=True):
+    if st.button("🗑️ Clear Chat History", use_container_width=True):
         st.session_state.messages = []
-        st.session_state.session_id = f"ramp_session_{int(time.time())}"
+        st.session_state.saved_queries = set()
+        st.session_state.session_id = f"ramp_{int(time.time())}"
         st.rerun()
     st.markdown('</div>', unsafe_allow_html=True)
 
@@ -733,16 +671,16 @@ with st.sidebar:
 st.markdown(f"""
 <div class="nav-card">
     <div class="nav-left">
-        <div class="brand-avatar">🚗</div>
+        <div class="brand-avatar">{SVG_LOGO}</div>
         <div>
             <div class="brand-heading">RAMP-GPT</div>
-            <div class="brand-sub">Autonomous Garage Intelligence Engine</div>
+            <div class="brand-sub">Enterprise Autonomous Garage Intelligence</div>
         </div>
     </div>
     <div class="nav-right">
         <div class="badge-pill badge-mysql">
             <div class="badge-pulse"></div>
-            <span>MySQL 8.0 Live</span>
+            <span>MySQL Live</span>
         </div>
         <div class="badge-pill badge-engine">
             <span>⚡ {active_engine_name.split()[0]}</span>
@@ -752,7 +690,7 @@ st.markdown(f"""
 """, unsafe_allow_html=True)
 
 # ---------------------------------------------------------
-# Helper Functions: Chart.js & Table Components
+# Helper Functions: Visualizations & Tables
 # ---------------------------------------------------------
 def render_chart_component(chart_info: dict, chart_id: str, bright: bool = True):
     """Renders responsive modern Chart.js visualizer matching the vibrant theme."""
@@ -761,7 +699,6 @@ def render_chart_component(chart_info: dict, chart_id: str, bright: bool = True)
     labels = chart_info.get("labels", [])
     datasets = chart_info.get("datasets", [])
     
-    # Enrich datasets with vibrant palette if needed
     vibrant_colors = [
         "rgba(79, 70, 229, 0.85)",   # Indigo
         "rgba(236, 72, 153, 0.85)",  # Pink
@@ -835,7 +772,7 @@ def render_chart_component(chart_info: dict, chart_id: str, bright: bool = True)
                 border: 1.5px solid {border_box};
                 border-radius: 16px;
                 padding: 16px 20px;
-                height: 235px;
+                height: 240px;
                 box-sizing: border-box;
                 box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
             }}
@@ -850,7 +787,7 @@ def render_chart_component(chart_info: dict, chart_id: str, bright: bool = True)
                 gap: 8px;
             }}
             .canvas-box {{
-                height: 180px;
+                height: 185px;
                 width: 100%;
             }}
         </style>
@@ -869,32 +806,7 @@ def render_chart_component(chart_info: dict, chart_id: str, bright: bool = True)
     </body>
     </html>
     """
-    components.html(html_code, height=255)
-
-def render_table_component(table_info: dict):
-    cols = table_info.get("columns", [])
-    rows = table_info.get("rows", [])
-    if not cols or not rows:
-        return ""
-        
-    th_html = "".join([f"<th>{col}</th>" for col in cols])
-    tr_html = ""
-    for r in rows:
-        td_html = "".join([f"<td>{val}</td>" for val in r])
-        tr_html += f"<tr>{td_html}</tr>"
-        
-    return f"""
-    <div class="table-container">
-        <div class="table-header-title">
-            <span>📋 Structured Records ({len(rows)} rows)</span>
-            <span style="font-size: 10.5px; opacity: 0.8;">MYSQL RELATIONAL OUTPUT</span>
-        </div>
-        <table class="styled-grid-table">
-            <thead><tr>{th_html}</tr></thead>
-            <tbody>{tr_html}</tbody>
-        </table>
-    </div>
-    """
+    components.html(html_code, height=260)
 
 # ---------------------------------------------------------
 # Hero Section & Quick Prompt Cards (Shown when chat is empty)
@@ -953,10 +865,10 @@ for msg_idx, msg in enumerate(st.session_state.messages):
         <div class="assistant-wrapper">
             <div class="asst-header">
                 <div class="asst-identity">
-                    <div class="asst-glow-icon">✦</div>
+                    <div class="asst-glow-icon">{SVG_LOGO}</div>
                     <div>
                         <div class="asst-title">GARAGE INTELLIGENCE</div>
-                        <div style="font-size: 10px; color: #64748B;">Validated Relational Output</div>
+                        <div style="font-size: 10.5px; color: #64748B; font-weight: 600;">Verified SQL Analytical Output</div>
                     </div>
                 </div>
                 <div class="asst-telemetry-row">{telemetry_html}</div>
@@ -964,45 +876,69 @@ for msg_idx, msg in enumerate(st.session_state.messages):
             <div class="asst-answer-text">{msg['content']}</div>
         """, unsafe_allow_html=True)
 
-        # Render Structured Table Component
-        table_data = msg.get("table_data")
-        if table_data:
-            st.markdown(render_table_component(table_data), unsafe_allow_html=True)
-
-        # Render Dynamic Chart Component
         chart_data = msg.get("chart_data")
-        if chart_data and isinstance(chart_data, dict):
-            render_chart_component(chart_data, f"chart_{msg_idx}", bright=is_bright)
-
-        # Render Collapsible SQL Inspector
+        table_data = msg.get("table_data")
         sql_text = msg.get("sql", "").strip()
-        if sql_text:
-            with st.expander("🗔 Inspect Generated SQL & Telemetry", expanded=False):
-                st.code(sql_text, language="sql")
-                st.caption(f"Engine: {msg.get('engine', active_engine_name)} | Session: {st.session_state.session_id}")
 
-        # Action Buttons (Thumbs-Up Knowledge Base & CSV Download)
-        col_act1, col_act2, col_act3 = st.columns([2.5, 2.5, 5])
+        # Modern Interactive Tabs
+        has_chart = bool(chart_data and isinstance(chart_data, dict))
+        has_table = bool(table_data and len(table_data.get("rows", [])) > 0)
+        has_sql = bool(sql_text)
+
+        tab_names = []
+        if has_chart:
+            tab_names.append("📊 Visualization")
+        if has_table:
+            tab_names.append("📋 Data Table")
+        if has_sql:
+            tab_names.append("🗔 Executed SQL")
+
+        if tab_names:
+            tabs = st.tabs(tab_names)
+            tab_idx = 0
+
+            # 1. Visualization Tab
+            if has_chart:
+                with tabs[tab_idx]:
+                    render_chart_component(chart_data, f"chart_{msg_idx}", bright=is_bright)
+                tab_idx += 1
+
+            # 2. Data Table Tab
+            if has_table:
+                with tabs[tab_idx]:
+                    df = pd.DataFrame(table_data.get("rows", []), columns=table_data.get("columns", []))
+                    st.dataframe(df, use_container_width=True, hide_index=True)
+                    csv_bytes = df.to_csv(index=False).encode('utf-8')
+                    st.download_button(
+                        label="📥 Download Formatted CSV",
+                        data=csv_bytes,
+                        file_name=f"ramp_data_query_{msg_idx}.csv",
+                        mime="text/csv",
+                        key=f"csv_dl_{msg_idx}"
+                    )
+                tab_idx += 1
+
+            # 3. Executed SQL Tab
+            if has_sql:
+                with tabs[tab_idx]:
+                    st.code(sql_text, language="sql")
+                    st.caption(f"Engine: {msg.get('engine', active_engine_name)} | Session: {st.session_state.session_id}")
+                tab_idx += 1
+
+        # Action Buttons (Thumbs-Up Knowledge Base Ingestion)
+        col_act1, col_act2 = st.columns([3, 7])
         with col_act1:
             if not cached_hit and sql_text:
-                if st.button("👍 Useful Query", key=f"thumb_{msg_idx}"):
-                    save_golden_query(msg.get("user_query", ""), sql_text)
-                    st.toast("Saved to Golden Knowledge Base!", icon="✅")
-                    st.session_state.golden_count += 1
-                    time.sleep(0.6)
-                    st.rerun()
-
-        with col_act2:
-            if table_data:
-                df = pd.DataFrame(table_data.get("rows", []), columns=table_data.get("columns", []))
-                csv_bytes = df.to_csv(index=False).encode('utf-8')
-                st.download_button(
-                    label="📥 Export CSV",
-                    data=csv_bytes,
-                    file_name=f"ramp_query_{msg_idx}.csv",
-                    mime="text/csv",
-                    key=f"csv_dl_{msg_idx}"
-                )
+                if msg_idx in st.session_state.saved_queries:
+                    st.button("✓ Saved to Golden Cache", key=f"saved_{msg_idx}", disabled=True)
+                else:
+                    if st.button("👍 Add to Golden Knowledge Base", key=f"thumb_{msg_idx}"):
+                        save_golden_query(msg.get("user_query", ""), sql_text)
+                        st.session_state.saved_queries.add(msg_idx)
+                        st.session_state.golden_count += 1
+                        st.toast("Verified query added to Knowledge Base!", icon="✅")
+                        time.sleep(0.5)
+                        st.rerun()
 
         st.markdown('</div>', unsafe_allow_html=True)
 
